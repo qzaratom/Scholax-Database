@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepler College Database</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add jsPDF and SheetJS libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary-color: #1e1744;
+            --secondary-color: #1e1744;
+            --accent-color: #ff006e;
+            --light-color:#1e1744;
+            --dark-color:#1e1744;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+            --success-color: #38b000;
+            --warning-color: #ff9e00;
+            --danger-color: #ef233c;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .system-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        .user-info i {
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        /* Search and Filters Section */
+        .filters-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .filters-title {
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-title i {
+            color: var(--primary-color);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+        }
+
+        .search-bar, .dropdown, .add-btn {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-bar {
+            padding-left: 45px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 20px;
+        }
+
+        .search-bar:focus, .dropdown:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+        }
+
+        .add-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+        }
+
+        /* Table Section */
+        .table-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .records-count {
+            background-color: var(--light-gray);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .export-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            background-color: var(--light-gray);
+            color: var(--dark-color);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-pdf {
+            background-color: rgba(239, 35, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        .export-excel {
+            background-color: rgba(56, 176, 0, 0.1);
+            color: var(--success-color);
+        }
+
+        .export-data {
+            background-color: rgba(58, 134, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: #f1f3f9;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f9fafd;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--light-gray);
+            background-color: #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-color);
+        }
+
+        .profile-pic i {
+            font-size: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .edit-btn {
+            background-color: rgba(56, 176, 0, 0.1);
+            color: var(--success-color);
+        }
+
+        .edit-btn:hover {
+            background-color: rgba(56, 176, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: rgba(239, 35, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(239, 35, 60, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .password-display {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            background-color: var(--light-gray);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-label.required:after {
+            content: '*';
+            color: var(--danger-color);
+        }
+
+        .form-input, .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+        }
+
+        .profile-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed var(--light-gray);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-upload:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+
+        .profile-upload i {
+            font-size: 3rem;
+            color: var(--gray-color);
+            margin-bottom: 15px;
+        }
+
+        .profile-upload span {
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .cancel-btn, .save-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cancel-btn {
+            background-color: var(--light-gray);
+            color: var(--dark-color);
+        }
+
+        .cancel-btn:hover {
+            background-color: #dde1e7;
+        }
+
+        .save-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--light-gray);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Status Badges */
+        .category-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .category-departments {
+            background-color: rgba(131, 56, 236, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .category-students {
+            background-color: rgba(58, 134, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .category-administrator {
+            background-color: rgba(255, 0, 110, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .export-options {
+                margin-left: 0;
+                margin-right: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .user-section {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .cancel-btn, .save-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .export-options {
+                margin-left: 0;
+                margin-right: 0;
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .filters-section, .table-section {
+                padding: 1rem;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .system-name {
+                font-size: 1.5rem;
+            }
+            
+            .export-btn span {
+                display: none;
+            }
+            
+            .export-btn {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="container nav-content">
+            <div class="logo-section">
+                <img src="logo.png" alt="Kepler College Logo" class="logo-img" id="logoImage">
+                <h1 class="system-name">ScholarX - Kepler College Database</h1>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="loggedInUser">Loading...</span>
+                </div>
+                <a href="index.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content container">
+        <!-- Search and Filters Section -->
+        <section class="filters-section">
+            <h2 class="filters-title">
+                <i class="fas fa-filter"></i>
+                Search & Filters
+            </h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Search by Name</label>
+                    <input type="text" class="search-bar" id="searchInput" placeholder="Enter name to search...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select class="dropdown" id="categoryFilter">
+                        <option value="any">Any</option>
+                        <option value="Departments">Departments</option>
+                        <option value="Students">Students</option>
+                        <option value="Administrator">Administrator</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Year</label>
+                    <select class="dropdown" id="yearFilter">
+                        <option value="any">Any</option>
+                        <option value="Year 24">Year 24</option>
+                        <option value="Year 25">Year 25</option>
+                    </select>
+                </div>
+                <button class="add-btn" id="addNewBtn">
+                    <i class="fas fa-plus-circle"></i>
+                    Add New Entry
+                </button>
+            </div>
+        </section>
+
+        <!-- Table Section -->
+        <section class="table-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-table"></i>
+                    Database Records
+                </h2>
+                <div class="export-options">
+                    <button class="export-btn export-pdf" id="exportPdfBtn">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Download PDF</span>
+                    </button>
+                    <button class="export-btn export-excel" id="exportExcelBtn">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Download Excel</span>
+                    </button>
+                    <button class="export-btn export-data" id="exportDataBtn">
+                        <i class="fas fa-database"></i>
+                        <span>Download Data</span>
+                    </button>
+                </div>
+                <div class="records-count" id="recordsCount">0 records found</div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table" id="mainTable">
+                    <thead>
+                        <tr>
+                            <th>Reg. Number</th>
+                            <th>Profile</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Course/Department</th>
+                            <th>Year</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-database"></i>
+                    <h3>No records found</h3>
+                    <p>Add a new entry by clicking the "Add New Entry" button above.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add/Edit Form Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-user-plus"></i>
+                    <span id="modalTitle">Add New Entry</span>
+                </h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="entryForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <i class="fas fa-portrait"></i>
+                                Profile Picture
+                            </label>
+                            <div class="profile-upload" id="profileUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload profile picture</span>
+                                <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div id="profilePreview" style="display: none; text-align: center; margin-top: 15px;">
+                                <img id="previewImage" src="" alt="Preview" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-id-card"></i>
+                                Registration Number
+                            </label>
+                            <input type="text" class="form-input" id="regNumber" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-user"></i>
+                                Full Name
+                            </label>
+                            <input type="text" class="form-input" id="fullName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" class="form-input" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-key"></i>
+                                Password
+                            </label>
+                            <input type="text" class="form-input" id="password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-book"></i>
+                                Course/Department
+                            </label>
+                            <input type="text" class="form-input" id="courseDept" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-calendar-alt"></i>
+                                Year
+                            </label>
+                            <select class="form-select" id="year" required>
+                                <option value="">Select Year</option>
+                                <option value="Year 24">Year 24</option>
+                                <option value="Year 25">Year 25</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">
+                                <i class="fas fa-layer-group"></i>
+                                Portal Category
+                            </label>
+                            <select class="form-select" id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Departments">Departments</option>
+                                <option value="Students">Students</option>
+                                <option value="Administrator">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" id="cancelBtn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="button" class="save-btn" id="saveBtn">
+                    <i class="fas fa-save"></i>
+                    Add Entry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database array
+        let kcdata = [];
+        
+        // Track if we're editing and which entry
+        let isEditing = false;
+        let editingIndex = -1;
+        
+        // Sample initial data including Administrator category
+        const initialData = [
+            {
+                regNumber: "KC2024001",
+                fullName: "Alice Johnson",
+                email: "alice.j@keplercollege.edu",
+                password: "Alice@2024",
+                courseDept: "Computer Science",
+                year: "Year 24",
+                category: "Students",
+                profilePic: ""
+            },
+            {
+                regNumber: "KC2024002",
+                fullName: "Robert Chen",
+                email: "robert.c@keplercollege.edu",
+                password: "Robert@2024",
+                courseDept: "Mathematics",
+                year: "Year 24",
+                category: "Students",
+                profilePic: ""
+            },
+            {
+                regNumber: "KC2024003",
+                fullName: "Dr. Sarah Williams",
+                email: "sarah.w@keplercollege.edu",
+                password: "Sarah@Dept",
+                courseDept: "Physics Department",
+                year: "Year 25",
+                category: "Departments",
+                profilePic: ""
+            },
+            {
+                regNumber: "KC2024004",
+                fullName: "Michael Brown",
+                email: "michael.b@keplercollege.edu",
+                password: "Michael@2024",
+                courseDept: "Engineering",
+                year: "Year 25",
+                category: "Students",
+                profilePic: ""
+            },
+            {
+                regNumber: "KCADMIN001",
+                fullName: "Admin User",
+                email: "admin@keplercollege.edu",
+                password: "Admin@Secure",
+                courseDept: "Administration",
+                year: "Year 25",
+                category: "Administrator",
+                profilePic: ""
+            }
+        ];
+        
+        // DOM Elements
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const recordsCount = document.getElementById('recordsCount');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const yearFilter = document.getElementById('yearFilter');
+        const addNewBtn = document.getElementById('addNewBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const profileUpload = document.getElementById('profileUpload');
+        const profilePicInput = document.getElementById('profilePicInput');
+        const profilePreview = document.getElementById('profilePreview');
+        const previewImage = document.getElementById('previewImage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loggedInUser = document.getElementById('loggedInUser');
+        const logoImage = document.getElementById('logoImage');
+        
+        // Download buttons
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        
+        // Form elements
+        const entryForm = document.getElementById('entryForm');
+        const regNumberInput = document.getElementById('regNumber');
+        const fullNameInput = document.getElementById('fullName');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const courseDeptInput = document.getElementById('courseDept');
+        const yearInput = document.getElementById('year');
+        const categoryInput = document.getElementById('category');
+        
+        // Function to get username from login page simulation
+        function getLoggedInUser() {
+            // Try to get from localStorage (simulating login data transfer)
+            const storedUser = localStorage.getItem('keplerLoggedInUser');
+            
+            if (storedUser) {
+                return storedUser;
+            } else {
+                // Default to John Doe if no user found (for demo purposes)
+                return "Martin";
+            }
+        }
+        
+        // Initialize the application
+        function initApp() {
+            // Set logged in user
+            loggedInUser.textContent = getLoggedInUser();
+            
+            // Handle logo image error (if logo.png doesn't exist)
+            logoImage.onerror = function() {
+                // Fallback to a placeholder if logo.png is not found
+                this.onerror = null;
+                this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Crect width='50' height='50' fill='%233a86ff' rx='8'/%3E%3Ctext x='25' y='30' font-family='Arial' font-size='20' fill='white' text-anchor='middle' font-weight='bold'%3EKC%3C/text%3E%3C/svg%3E";
+            };
+            
+            // Load initial data if no data in localStorage
+            const storedData = localStorage.getItem('kcdata');
+            if (storedData) {
+                kcdata = JSON.parse(storedData);
+            } else {
+                kcdata = [...initialData];
+                saveToLocalStorage();
+            }
+            
+            // Render the table
+            renderTable();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+        
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('kcdata', JSON.stringify(kcdata));
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search input
+            searchInput.addEventListener('input', filterTable);
+            
+            // Filter dropdowns
+            categoryFilter.addEventListener('change', filterTable);
+            yearFilter.addEventListener('change', filterTable);
+            
+            // Add new button
+            addNewBtn.addEventListener('click', openAddModal);
+            
+            // Modal controls
+            closeModal.addEventListener('click', closeModalFunc);
+            cancelBtn.addEventListener('click', closeModalFunc);
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) {
+                    closeModalFunc();
+                }
+            });
+            
+            // Save button
+            saveBtn.addEventListener('click', saveEntry);
+            
+            // Profile picture upload
+            profileUpload.addEventListener('click', function() {
+                profilePicInput.click();
+            });
+            
+            profilePicInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        previewImage.src = event.target.result;
+                        profilePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Form submission prevention
+            entryForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
+            
+            // Export buttons
+            exportPdfBtn.addEventListener('click', exportToPDF);
+            exportExcelBtn.addEventListener('click', exportToExcel);
+            exportDataBtn.addEventListener('click', exportToCSV);
+        }
+        
+        // Render the table with data
+        function renderTable(data = kcdata) {
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                recordsCount.textContent = '0 records found';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            recordsCount.textContent = `${data.length} record${data.length !== 1 ? 's' : ''} found`;
+            
+            data.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                
+                // Determine category badge class
+                let categoryClass = 'category-students';
+                if (entry.category === 'Departments') {
+                    categoryClass = 'category-departments';
+                } else if (entry.category === 'Administrator') {
+                    categoryClass = 'category-administrator';
+                }
+                
+                row.innerHTML = `
+                    <td>${entry.regNumber}</td>
+                    <td>
+                        <div class="profile-pic">
+                            ${entry.profilePic 
+                                ? `<img src="${entry.profilePic}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%;">` 
+                                : `<i class="fas fa-user-circle"></i>`
+                            }
+                        </div>
+                    </td>
+                    <td>${entry.fullName}</td>
+                    <td>${entry.email}</td>
+                    <td><span class="password-display">${entry.password}</span></td>
+                    <td>${entry.courseDept}</td>
+                    <td>${entry.year}</td>
+                    <td><span class="category-badge ${categoryClass}">${entry.category}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="edit-btn" onclick="editEntry(${index})">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </button>
+                            <button class="delete-btn" onclick="deleteEntry(${index})">
+                                <i class="fas fa-trash"></i>
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Filter table based on search and filters
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryValue = categoryFilter.value;
+            const yearValue = yearFilter.value;
+            
+            const filteredData = kcdata.filter(entry => {
+                // Search filter
+                const matchesSearch = searchTerm === '' || 
+                    entry.fullName.toLowerCase().includes(searchTerm) ||
+                    entry.regNumber.toLowerCase().includes(searchTerm) ||
+                    entry.email.toLowerCase().includes(searchTerm);
+                
+                // Category filter
+                const matchesCategory = categoryValue === 'any' || entry.category === categoryValue;
+                
+                // Year filter
+                const matchesYear = yearValue === 'any' || entry.year === yearValue;
+                
+                return matchesSearch && matchesCategory && matchesYear;
+            });
+            
+            renderTable(filteredData);
+        }
+        
+        // Open modal for adding new entry
+        function openAddModal() {
+            isEditing = false;
+            editingIndex = -1;
+            modalTitle.textContent = 'Add New Entry';
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Add Entry';
+            
+            // Reset form
+            entryForm.reset();
+            profilePreview.style.display = 'none';
+            previewImage.src = '';
+            profilePicInput.value = '';
+            
+            // Open modal
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus on first input
+            setTimeout(() => regNumberInput.focus(), 300);
+        }
+        
+        // Open modal for editing entry
+        function editEntry(index) {
+            isEditing = true;
+            editingIndex = index;
+            modalTitle.textContent = 'Edit Entry';
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            
+            // Get the entry data
+            const entry = kcdata[index];
+            
+            // Fill form with entry data
+            regNumberInput.value = entry.regNumber;
+            fullNameInput.value = entry.fullName;
+            emailInput.value = entry.email;
+            passwordInput.value = entry.password;
+            courseDeptInput.value = entry.courseDept;
+            yearInput.value = entry.year;
+            categoryInput.value = entry.category;
+            
+            // Handle profile picture
+            if (entry.profilePic) {
+                previewImage.src = entry.profilePic;
+                profilePreview.style.display = 'block';
+            } else {
+                profilePreview.style.display = 'none';
+            }
+            
+            // Open modal
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Save entry (add or edit)
+        function saveEntry() {
+            // Validate form
+            if (!entryForm.checkValidity()) {
+                alert('Please fill in all required fields correctly.');
+                return;
+            }
+            
+            // Get form values
+            const newEntry = {
+                regNumber: regNumberInput.value.trim(),
+                fullName: fullNameInput.value.trim(),
+                email: emailInput.value.trim(),
+                password: passwordInput.value,
+                courseDept: courseDeptInput.value.trim(),
+                year: yearInput.value,
+                category: categoryInput.value,
+                profilePic: previewImage.src || ""
+            };
+            
+            if (isEditing) {
+                // Update existing entry
+                kcdata[editingIndex] = newEntry;
+            } else {
+                // Add new entry
+                kcdata.push(newEntry);
+            }
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Re-render table
+            renderTable();
+            filterTable();
+            
+            // Close modal
+            closeModalFunc();
+            
+            // Show success message
+            alert(`Entry ${isEditing ? 'updated' : 'added'} successfully!`);
+        }
+        
+        // Delete entry
+        function deleteEntry(index) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                kcdata.splice(index, 1);
+                saveToLocalStorage();
+                renderTable();
+                filterTable();
+                alert('Entry deleted successfully!');
+            }
+        }
+        
+        // Close modal
+        function closeModalFunc() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Export to PDF
+        function exportToPDF() {
+            if (kcdata.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape');
+                
+                // Title
+                const title = "Kepler College Database Report";
+                const date = new Date().toLocaleDateString();
+                const time = new Date().toLocaleTimeString();
+                
+                doc.setFontSize(20);
+                doc.text(title, 15, 15);
+                doc.setFontSize(10);
+                doc.text(`Generated on: ${date} at ${time}`, 15, 22);
+                doc.text(`Total Records: ${kcdata.length}`, 15, 27);
+                
+                // Prepare table data
+                const tableData = kcdata.map(entry => [
+                    entry.regNumber,
+                    entry.fullName,
+                    entry.email,
+                    entry.password,
+                    entry.courseDept,
+                    entry.year,
+                    entry.category
+                ]);
+                
+                // Table headers
+                const headers = [
+                    ["Reg. Number", "Full Name", "Email", "Password", "Course/Department", "Year", "Category"]
+                ];
+                
+                // Create table
+                doc.autoTable({
+                    head: headers,
+                    body: tableData,
+                    startY: 35,
+                    theme: 'grid',
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    headStyles: { fillColor: [30, 23, 68], textColor: 255 },
+                    alternateRowStyles: { fillColor: [245, 247, 251] },
+                    margin: { left: 15 }
+                });
+                
+                // Save the PDF
+                doc.save(`Kepler-College-Database-${date.replace(/\//g, '-')}.pdf`);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please check console for details.');
+            }
+        }
+        
+        // Export to Excel
+        function exportToExcel() {
+            if (kcdata.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            try {
+                // Prepare data for Excel
+                const excelData = kcdata.map(entry => ({
+                    "Registration Number": entry.regNumber,
+                    "Full Name": entry.fullName,
+                    "Email": entry.email,
+                    "Password": entry.password,
+                    "Course/Department": entry.courseDept,
+                    "Year": entry.year,
+                    "Category": entry.category
+                }));
+                
+                // Create worksheet
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+                
+                // Create workbook
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Kepler College Data");
+                
+                // Generate Excel file
+                const date = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(workbook, `Kepler-College-Database-${date}.xlsx`);
+            } catch (error) {
+                console.error('Error generating Excel:', error);
+                alert('Error generating Excel file. Please check console for details.');
+            }
+        }
+        
+        // Export to CSV/Data
+        function exportToCSV() {
+            if (kcdata.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            try {
+                // Prepare CSV content
+                const headers = ["Registration Number", "Full Name", "Email", "Password", "Course/Department", "Year", "Category"];
+                
+                // Convert data to CSV rows
+                const csvRows = kcdata.map(entry => 
+                    `"${entry.regNumber}","${entry.fullName}","${entry.email}","${entry.password}","${entry.courseDept}","${entry.year}","${entry.category}"`
+                );
+                
+                // Combine headers and data
+                const csvContent = [
+                    headers.join(','),
+                    ...csvRows
+                ].join('\n');
+                
+                // Create download link
+                const date = new Date().toISOString().split('T')[0];
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute("href", url);
+                link.setAttribute("download", `Kepler-College-Database-${date}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error generating CSV:', error);
+                alert('Error generating CSV file. Please check console for details.');
+            }
+        }
+        
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
