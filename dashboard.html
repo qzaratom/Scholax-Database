@@ -609,6 +609,11 @@
             color: var(--accent-color);
         }
 
+        .category-instructor {
+    background-color: rgba(255, 158, 0, 0.1);
+    color: var(--warning-color);
+}
+
         /* Responsive Design */
         @media (max-width: 992px) {
             .data-table {
@@ -733,10 +738,12 @@
                 <div class="filter-group">
                     <label class="filter-label">Category</label>
                     <select class="dropdown" id="categoryFilter">
-                        <option value="any">Any</option>
-                        <option value="Departments">Departments</option>
-                        <option value="Students">Students</option>
-                        <option value="Administrator">Administrator</option>
+    <option value="any">Any</option>
+    <option value="Departments">Departments</option>
+    <option value="Students">Students</option>
+    <option value="Administrator">Administrator</option>
+    <option value="Instructor">Instructor</option>
+</select>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -894,11 +901,13 @@
                                 Portal Category
                             </label>
                             <select class="form-select" id="category" required>
-                                <option value="">Select Category</option>
-                                <option value="Departments">Departments</option>
-                                <option value="Students">Students</option>
-                                <option value="Administrator">Administrator</option>
-                            </select>
+    <option value="">Select Category</option>
+    <option value="Departments">Departments</option>
+    <option value="Students">Students</option>
+    <option value="Administrator">Administrator</option>
+    <option value="Instructor">Instructor</option>
+</select>
+                        
                         </div>
                     </div>
                 </form>
