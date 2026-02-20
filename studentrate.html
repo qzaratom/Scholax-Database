@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Student · Rate Sessions</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- reset – clean ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- UPPER BAR – shows "Student" ----- */
+        .top-bar {
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            color: #1e3d5b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-name {
+            font-weight: 650;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-sub {
+            font-weight: 440;
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #edf2f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.03);
+            letter-spacing: 0.2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .student-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f4f9fd;
+            padding: 8px 18px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .student-badge i {
+            font-size: 1.2rem;
+            color: #2a6b7a;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: #8a4a4a;
+            font-weight: 550;
+            text-decoration: none;
+            border: 1px solid #f0d6d6;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            cursor: pointer;
+        }
+
+        .logout-btn i {
+            font-size: 1.1rem;
+            color: #b35959;
+        }
+
+        .logout-btn:hover {
+            background: #fdf3f2;
+            border-color: #dcb5b5;
+            color: #6d3b3b;
+            box-shadow: 0 6px 14px rgba(180, 90, 90, 0.08);
+        }
+
+        /* ----- PAGE TITLE BAR – shows RATE ----- */
+        .page-title-bar {
+            width: 100%;
+            height: 56px;
+            background: #fafcff;
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            flex-shrink: 0;
+        }
+
+        .page-title-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-icon {
+            width: 36px;
+            height: 36px;
+            background: #eaf0f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c6b7c;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-breadcrumb {
+            color: #6b8a9a;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .page-breadcrumb i {
+            margin: 0 6px;
+            font-size: 0.7rem;
+            color: #8aa7b5;
+        }
+
+        /* ----- main flex container (sidebar + main content) ----- */
+        .app-frame {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ---------- SIDEBAR –– ONLY 3 ICONS: dashboard, rate, chart ---------- */
+        .sidebar {
+            width: 88px;
+            background: #ffffff;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+            gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02);
+            border-right: 1px solid #edf0f5;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            color: #496c7c;
+            text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+            background: #f8fcff;
+            border: 1px solid #e6ecf0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            color: #3e6272;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #eaf1f9;
+            border-color: #b8cfda;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(60, 110, 130, 0.08);
+        }
+
+        .nav-item:hover i {
+            color: #1a4c64;
+        }
+
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 55, 70, 0.95);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 480;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,20,30,0.15);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            z-index: 1000;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 110%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-item:hover::after {
+            opacity: 1;
+            left: 125%;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            left: 115%;
+        }
+
+        .nav-item.active {
+            background: #e1ecf2;
+            border-color: #aac1cc;
+        }
+
+        .nav-item.active i {
+            color: #1c5565;
+        }
+
+        /* ----- MAIN CONTENT AREA (scrollable) ----- */
+        .main-content {
+            flex: 1;
+            background: #f8fbfe;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ----- WELCOME SECTION ----- */
+        .welcome-section {
+            background: linear-gradient(135deg, #e1ecf4, #d4e4ed);
+            border-radius: 24px;
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+        }
+
+        .welcome-text h2 {
+            font-size: 1.8rem;
+            font-weight: 650;
+            color: #1a3b4a;
+            margin-bottom: 8px;
+        }
+
+        .welcome-text p {
+            color: #2f5b6e;
+            font-size: 1.1rem;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a4c64;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #3e6f82;
+            font-weight: 500;
+        }
+
+        /* ----- COURSES GRID (Summary Cards) ----- */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        /* ----- COURSE CARD – Summary View ----- */
+        .course-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            box-shadow: 0 16px 28px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+            border-color: #d0dfe8;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: 650;
+            color: #1a3b4a;
+            margin-bottom: 8px;
+        }
+
+        .course-badge {
+            background: #e1ecf2;
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: #1e5568;
+            font-weight: 500;
+        }
+
+        .course-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid #ecf1f5;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2e5a6b;
+            font-size: 0.95rem;
+        }
+
+        .summary-icon {
+            width: 32px;
+            color: #568296;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .summary-badge {
+            background: #ecf3f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 550;
+            color: #1a4c64;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #d0dfe8;
+        }
+
+        .summary-badge i {
+            font-size: 0.85rem;
+            color: #3e7486;
+        }
+
+        .rating-progress {
+            margin-top: 8px;
+            background: #f0f7fa;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .progress-stars {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .progress-stars i {
+            margin-right: 2px;
+        }
+
+        .progress-text {
+            color: #1e5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* ----- MODAL – Course Sessions Rating ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: white;
+            width: 800px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.25);
+            padding: 32px;
+            transform: scale(0.96) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.12, 0.71, 0.33, 1);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ecf1f5;
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #e2ecf2;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+        }
+
+        .modal-subtitle {
+            color: #2e6b7c;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        .modal-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #7f9fb0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.15s;
+        }
+
+        .modal-close:hover {
+            background: #ecf5f9;
+            color: #1a4c64;
+        }
+
+        /* ----- SESSIONS LIST INSIDE MODAL ----- */
+        .modal-sessions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .session-item {
+            border: 1px solid #e6ecf0;
+            border-radius: 18px;
+            padding: 20px;
+            background: #fafdff;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .session-name {
+            font-weight: 600;
+            color: #1f4b5c;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-name i {
+            color: #4682a0;
+        }
+
+        .session-status {
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: #ecf3f7;
+            color: #1e5568;
+        }
+
+        .session-status.completed {
+            background: #e3f2ed;
+            color: #2e8b6c;
+        }
+
+        .session-status.locked {
+            background: #fee2e2;
+            color: #b34a4a;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.15s;
+            padding: 0 4px;
+        }
+
+        .star-btn.active {
+            color: #fbbf24;
+        }
+
+        .star-btn:hover {
+            transform: scale(1.1);
+            color: #fbbf24;
+        }
+
+        .star-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .feedback-container {
+            margin-top: 16px;
+        }
+
+        .feedback-textbox {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid #e2eaf0;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .feedback-textbox:focus {
+            outline: none;
+            border-color: #4682a0;
+            box-shadow: 0 0 0 3px rgba(70, 130, 160, 0.1);
+        }
+
+        .feedback-textbox.disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .suggestions-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .suggestion-chip {
+            background: #ecf3f7;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: #1e5568;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid #d0dfe8;
+        }
+
+        .suggestion-chip:hover {
+            background: #d6e4ed;
+            transform: translateY(-1px);
+        }
+
+        .suggestion-chip.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .session-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .save-rating-btn {
+            background: #1a4c64;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 550;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-rating-btn:hover:not(:disabled) {
+            background: #0e3a4f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(26, 76, 100, 0.2);
+        }
+
+        .save-rating-btn.saved {
+            background: #2e8b6c;
+            cursor: default;
+        }
+
+        .save-rating-btn.saved:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .save-rating-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background: white;
+            border-radius: 24px;
+            border: 1px dashed #cbd5e0;
+            color: #5f7d8c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #a0c0ce;
+        }
+
+        .empty-state h3 {
+            font-weight: 500;
+            color: #365f6e;
+        }
+
+        .lock-message {
+            text-align: center;
+            padding: 20px;
+            background: #fff4e5;
+            border-radius: 16px;
+            color: #a1662f;
+            font-weight: 500;
+        }
+
+        /* ----- TOAST NOTIFICATION ----- */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 28px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 100px;
+            box-shadow: 0 16px 32px rgba(0,20,30,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #1a485c;
+            border-left: 6px solid #2e8b6c;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+            z-index: 10001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            color: #2e8b6c;
+            font-size: 1.2rem;
+        }
+
+        /* ----- LOGOUT MODAL ----- */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-modal-card {
+            background: white;
+            width: 400px;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.2);
+            padding: 32px 28px;
+        }
+
+        .modal-header-compact {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon-compact {
+            width: 56px;
+            height: 56px;
+            background: #fff2f0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b44a4a;
+            font-size: 1.8rem;
+        }
+
+        .modal-title-compact {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+        }
+
+        .modal-message {
+            font-size: 1.05rem;
+            color: #3f5662;
+            margin: 12px 0 28px 8px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 560;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn-secondary {
+            background: #f0f4f7;
+            color: #2c4a5c;
+            border-color: #dae2e8;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e3eaef;
+        }
+
+        .modal-btn-danger {
+            background: #b94747;
+            color: white;
+        }
+
+        .modal-btn-danger:hover {
+            background: #a33a3a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ███ UPPER BAR – Student View -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <div class="student-badge">
+                <i class="fas fa-user-graduate"></i>
+                <span>Student</span>
+            </div>
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ███ PAGE TITLE BAR – Rate -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon">
+                <i class="fas fa-star-half-alt"></i>
+            </div>
+            <span class="page-title">Rate</span>
+            <span class="page-breadcrumb">
+                <i class="fas fa-chevron-right"></i> Select a Course to Rate
+            </span>
+        </div>
+    </div>
+
+    <!-- ███ SIDEBAR + MAIN CONTENT -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="studentdash.html" class="nav-item" data-tooltip="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="studentrate.html" class="nav-item active" data-tooltip="Rate">
+                    <i class="fas fa-star-half-alt"></i>
+                </a>
+                <a href="studentchart.html" class="nav-item" data-tooltip="Chart">
+                    <i class="fas fa-comments"></i>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT – Courses Grid -->
+        <main class="main-content">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h2>Welcome back, Student!</h2>
+                    <p>Select a course below to rate its sessions</p>
+                </div>
+                <div class="welcome-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalCoursesStat">0</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalSessionsStat">0</div>
+                        <div class="stat-label">Sessions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Grid -->
+            <div id="coursesGrid" class="courses-grid">
+                <!-- Courses will be dynamically loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ███ COURSE SESSIONS MODAL -->
+    <div id="courseModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <span id="modalCourseTitle" class="modal-title">Course Name</span>
+                    <div id="modalInstructorNames" class="modal-subtitle">Instructor: </div>
+                </div>
+                <button class="modal-close" onclick="closeCourseModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="modalSessionsList" class="modal-sessions-list">
+                <!-- Sessions will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ███ TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Rating saved successfully</span>
+    </div>
+
+    <!-- ███ LOGOUT CONFIRMATION MODAL -->
+    <div id="logoutModal" class="logout-modal-overlay">
+        <div class="logout-modal-card">
+            <div class="modal-header-compact">
+                <div class="modal-icon-compact">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="modal-title-compact">Log out</span>
+            </div>
+            <div class="modal-message">
+                Are you sure you want to sign out of your SholarX account?
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button class="modal-btn modal-btn-danger" onclick="confirmLogout()">Yes, log out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONSTANTS & GLOBAL STATE ============
+        const RATINGS_STORAGE_KEY = 'ratingsystems';
+        const INSTRUCTOR_RATES_KEY = 'instructorrates';
+        const FEEDBACK_STORAGE_KEY = 'feedbackArray';   // new feedback array
+        const LOCK_STATES_KEY = 'sessionLocks';          // shared with instructor page
+        
+        // Common feedback suggestions
+        const FEEDBACK_SUGGESTIONS = [
+            "Great session! Very informative",
+            "Excellent teaching style",
+            "Clear and easy to understand",
+            "Very engaging presentation",
+            "Good pace and coverage",
+            "Helpful examples and explanations",
+            "Interactive and fun session",
+            "Well structured content",
+            "Knowledgeable instructor",
+            "Would recommend to others"
+        ];
+
+        let currentCourseIndex = -1;
+        let currentCourseData = null;
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCourses();
+            initializeFeedbackStorage();
+        });
+
+        // ============ LOCAL STORAGE FUNCTIONS ============
+        function getRatingSystems() {
+            const systems = localStorage.getItem(RATINGS_STORAGE_KEY);
+            return systems ? JSON.parse(systems) : [];
+        }
+
+        function getInstructorRates() {
+            const rates = localStorage.getItem(INSTRUCTOR_RATES_KEY);
+            return rates ? JSON.parse(rates) : [];
+        }
+
+        function getFeedbackArray() {
+            const feedback = localStorage.getItem(FEEDBACK_STORAGE_KEY);
+            return feedback ? JSON.parse(feedback) : [];
+        }
+
+        function saveFeedbackArray(feedbackArray) {
+            localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedbackArray));
+        }
+
+        function initializeFeedbackStorage() {
+            if (!localStorage.getItem(FEEDBACK_STORAGE_KEY)) {
+                saveFeedbackArray([]);
+            }
+        }
+
+        // Get lock states from instructor page (shared)
+        function getLockStates(systemName, instructorName) {
+            const all = JSON.parse(localStorage.getItem(LOCK_STATES_KEY) || '{}');
+            const key = `${systemName}_${instructorName}`;
+            return all[key] || {}; // returns object like {0: true, 1: false} (true = locked)
+        }
+
+        // ============ LOAD AND DISPLAY COURSES (SUMMARY) ============
+        function loadCourses() {
+            const courses = getRatingSystems();
+            const grid = document.getElementById('coursesGrid');
+            
+            // Update stats
+            document.getElementById('totalCoursesStat').textContent = courses.length;
+            
+            let totalSessions = 0;
+            courses.forEach(course => {
+                totalSessions += course.sessions?.length || 0;
+            });
+            document.getElementById('totalSessionsStat').textContent = totalSessions;
+            
+            if (courses.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>No Courses Available</h3>
+                        <p style="color: #6e8b9b;">Please check back later for courses to rate</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = courses.map((course, index) => {
+                // Calculate rating progress for this course
+                const ratingProgress = getCourseRatingProgress(course, index);
+                
+                return `
+                <div class="course-card" onclick="openCourseModal(${index})">
+                    <div class="course-header">
+                        <h3 class="course-title">${escapeHtml(course.systemName)}</h3>
+                        <span class="course-badge">${course.sessions?.length || 0} sessions</span>
+                    </div>
+                    
+                    <div class="course-summary">
+                        <div class="summary-item">
+                            <span class="summary-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+                            <span class="summary-badge">
+                                <i class="fas fa-users"></i> ${course.instructors.map(inst => inst.name).join(', ')}
+                            </span>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <span class="summary-icon"><i class="fas fa-user-graduate"></i></span>
+                            <span class="summary-badge">
+                                <i class="fas fa-users"></i> ${course.students.length} Student${course.students.length !== 1 ? 's' : ''}
+                            </span>
+                        </div>
+                        
+                        ${ratingProgress}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function getCourseRatingProgress(course, courseIndex) {
+            const rates = getInstructorRates();
+            const instructorName = course.instructors.map(inst => inst.name).join(', ');
+            
+            // Find ratings for this course/instructor
+            const courseRatings = rates.filter(r => 
+                r.systemName === course.systemName && 
+                r.instructorName === instructorName
+            );
+            
+            if (courseRatings.length === 0) {
+                return `
+                    <div class="rating-progress">
+                        <div class="progress-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <span class="progress-text">Not rated yet</span>
+                    </div>
+                `;
+            }
+            
+            // Calculate average rating
+            let totalPoints = 0;
+            let totalRatings = 0;
+            courseRatings.forEach(r => {
+                if (r.feedbacks) {
+                    r.feedbacks.forEach(f => {
+                        totalPoints += f.rating;
+                        totalRatings++;
+                    });
+                }
+            });
+            
+            const avgRating = totalRatings > 0 ? (totalPoints / totalRatings).toFixed(1) : 0;
+            
+            return `
+                <div class="rating-progress">
+                    <div class="progress-stars">
+                        ${generateStarSummary(avgRating)}
+                    </div>
+                    <span class="progress-text">${avgRating} avg (${totalRatings} ratings)</span>
+                </div>
+            `;
+        }
+
+        function generateStarSummary(rating) {
+            const numRating = parseFloat(rating);
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= numRating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= numRating) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // ============ MODAL FUNCTIONS ============
+        function openCourseModal(courseIndex) {
+            const courses = getRatingSystems();
+            const course = courses[courseIndex];
+            
+            if (!course) return;
+            
+            currentCourseIndex = courseIndex;
+            currentCourseData = course;
+            
+            // Set modal header
+            document.getElementById('modalCourseTitle').textContent = course.systemName;
+            document.getElementById('modalInstructorNames').textContent = 
+                `Instructor: ${course.instructors.map(inst => inst.name).join(', ')}`;
+            
+            // Generate sessions HTML with lock status
+            const sessionsList = document.getElementById('modalSessionsList');
+            sessionsList.innerHTML = generateSessionsHTML(course, courseIndex);
+            
+            // Open modal
+            document.getElementById('courseModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Load saved ratings and feedback for this course's sessions
+            setTimeout(() => loadModalSavedData(courseIndex), 100);
+        }
+
+        function closeCourseModal() {
+            document.getElementById('courseModal').classList.remove('active');
+            document.body.style.overflow = '';
+            currentCourseIndex = -1;
+            currentCourseData = null;
+        }
+
+        function generateSessionsHTML(course, courseIndex) {
+            if (!course.sessions || course.sessions.length === 0) {
+                return '<p class="empty-state">No sessions available for this course</p>';
+            }
+
+            // For each instructor, we need to check lock states. Since a course may have multiple instructors,
+            // we'll show sessions per instructor? For simplicity, we'll assume sessions belong to all instructors.
+            // We'll check locks for the first instructor (or aggregate). In a real system, you'd handle per instructor.
+            // Here we'll check locks for each instructor and if ANY instructor has locked, session is locked? Actually instructor page locks per instructor.
+            // Better: For student, we need to know which instructor they are rating. In this modal we show instructor names in header.
+            // We'll generate sessions for each instructor separately? But UI expects one list.
+            // To align with previous logic, we'll use the first instructor for lock states (since we show all instructors in header).
+            // For accurate lock status, we'd need to know which instructor the student is rating. We'll use first instructor as representative.
+            const firstInstructorName = course.instructors[0]?.name || '';
+            const lockStates = getLockStates(course.systemName, firstInstructorName);
+
+            return course.sessions.map((session, sessionIndex) => {
+                const isLocked = lockStates[sessionIndex] !== false; // default locked = true
+                const lockClass = isLocked ? 'locked' : '';
+                const lockStatusText = isLocked ? '🔒 Locked' : '🔓 Unlocked';
+                const disabledAttr = isLocked ? 'disabled' : '';
+                const disabledClass = isLocked ? 'disabled' : '';
+
+                return `
+                    <div class="session-item" data-course-index="${courseIndex}" data-session-index="${sessionIndex}">
+                        <div class="session-header">
+                            <div class="session-name">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${escapeHtml(session)}
+                            </div>
+                            <span class="session-status ${isLocked ? 'locked' : ''}" id="status_${courseIndex}_${sessionIndex}">
+                                ${isLocked ? 'Locked' : 'Pending'}
+                            </span>
+                        </div>
+                        
+                        <!-- Star Rating (5 stars) - disabled if locked -->
+                        <div class="rating-stars" id="stars_${courseIndex}_${sessionIndex}">
+                            ${generateStarButtons(courseIndex, sessionIndex, isLocked)}
+                        </div>
+                        
+                        <!-- Feedback Textbox with Suggestions - disabled if locked -->
+                        <div class="feedback-container">
+                            <textarea 
+                                class="feedback-textbox ${disabledClass}" 
+                                id="feedback_${courseIndex}_${sessionIndex}"
+                                placeholder="${isLocked ? 'This session is locked by instructor' : 'Write your feedback here...'}"
+                                rows="3"
+                                ${disabledAttr}
+                            ></textarea>
+                            
+                            <div class="suggestions-container">
+                                ${generateSuggestions(courseIndex, sessionIndex, isLocked)}
+                            </div>
+                        </div>
+                        
+                        <!-- Save Button - disabled if locked -->
+                        <div class="session-actions">
+                            <button 
+                                class="save-rating-btn" 
+                                id="saveBtn_${courseIndex}_${sessionIndex}"
+                                onclick="saveRating(${courseIndex}, ${sessionIndex})"
+                                ${disabledAttr}
+                            >
+                                <i class="fas fa-save"></i> Save Rating
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateStarButtons(courseIndex, sessionIndex, isLocked) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                const disabledClass = isLocked ? 'disabled' : '';
+                stars += `
+                    <button class="star-btn ${disabledClass}" onclick="${isLocked ? '' : `setRating(${courseIndex}, ${sessionIndex}, ${i})`}" ${isLocked ? 'disabled' : ''}>
+                        <i class="fas fa-star"></i>
+                    </button>
+                `;
+            }
+            return stars;
+        }
+
+        function generateSuggestions(courseIndex, sessionIndex, isLocked) {
+            if (isLocked) return '';
+            // Show random 5 suggestions
+            const shuffled = [...FEEDBACK_SUGGESTIONS].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            return selected.map(suggestion => 
+                `<span class="suggestion-chip" onclick="useSuggestion(this, ${courseIndex}, ${sessionIndex}, '${escapeHtml(suggestion)}')">${escapeHtml(suggestion)}</span>`
+            ).join('');
+        }
+
+        // ============ RATING FUNCTIONS ============
+        function setRating(courseIndex, sessionIndex, rating) {
+            // Check if locked
+            const courses = getRatingSystems();
+            const course = courses[courseIndex];
+            const firstInstructorName = course.instructors[0]?.name || '';
+            const lockStates = getLockStates(course.systemName, firstInstructorName);
+            if (lockStates[sessionIndex] !== false) {
+                showToast('This session is locked by instructor', 'error');
+                return;
+            }
+
+            // Update star UI
+            const starsContainer = document.getElementById(`stars_${courseIndex}_${sessionIndex}`);
+            const starButtons = starsContainer.querySelectorAll('.star-btn');
+            
+            starButtons.forEach((btn, index) => {
+                if (index < rating) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update status
+            const statusEl = document.getElementById(`status_${courseIndex}_${sessionIndex}`);
+            if (statusEl) {
+                statusEl.textContent = `${rating} star${rating > 1 ? 's' : ''} selected`;
+                statusEl.classList.add('completed');
+            }
+            
+            // Store rating in session data
+            const ratingData = getSessionRatingData(courseIndex, sessionIndex);
+            ratingData.rating = rating;
+            saveSessionRatingData(courseIndex, sessionIndex, ratingData);
+        }
+
+        function useSuggestion(element, courseIndex, sessionIndex, suggestion) {
+            // Check if locked
+            const courses = getRatingSystems();
+            const course = courses[courseIndex];
+            const firstInstructorName = course.instructors[0]?.name || '';
+            const lockStates = getLockStates(course.systemName, firstInstructorName);
+            if (lockStates[sessionIndex] !== false) {
+                showToast('This session is locked by instructor', 'error');
+                return;
+            }
+
+            const textarea = document.getElementById(`feedback_${courseIndex}_${sessionIndex}`);
+            
+            if (textarea.value.trim() === '') {
+                textarea.value = suggestion;
+            } else {
+                textarea.value += '. ' + suggestion;
+            }
+            
+            textarea.focus();
+            
+            // Store feedback in session data
+            const ratingData = getSessionRatingData(courseIndex, sessionIndex);
+            ratingData.feedback = textarea.value;
+            saveSessionRatingData(courseIndex, sessionIndex, ratingData);
+            
+            showToast('Suggestion added to feedback');
+        }
+
+        function saveRating(courseIndex, sessionIndex) {
+            const courses = getRatingSystems();
+            const course = courses[courseIndex];
+            
+            if (!course) return;
+
+            // Check if locked again before save
+            const firstInstructorName = course.instructors[0]?.name || '';
+            const lockStates = getLockStates(course.systemName, firstInstructorName);
+            if (lockStates[sessionIndex] !== false) {
+                showToast('This session is locked by instructor', 'error');
+                return;
+            }
+            
+            // Get rating value
+            const starsContainer = document.getElementById(`stars_${courseIndex}_${sessionIndex}`);
+            const activeStars = starsContainer.querySelectorAll('.star-btn.active').length;
+            
+            if (activeStars === 0) {
+                showToast('Please select a star rating first', 'error');
+                return;
+            }
+            
+            // Get feedback text
+            const feedbackTextarea = document.getElementById(`feedback_${courseIndex}_${sessionIndex}`);
+            const feedback = feedbackTextarea.value.trim() || 'No feedback provided';
+            
+            // Get instructor name (use first instructor as representative)
+            const instructorName = course.instructors[0]?.name || 'Unknown Instructor';
+            
+            // Create feedback object for new feedbackArray
+            const feedbackData = {
+                systemName: course.systemName,
+                instructorName: instructorName,
+                sessionName: course.sessions[sessionIndex],
+                sessionIndex: sessionIndex,
+                rating: activeStars,
+                feedback: feedback,
+                timestamp: new Date().toISOString(),
+                studentId: 'current-student' // In real app, would come from login
+            };
+            
+            // Save to feedbackArray
+            saveToFeedbackArray(feedbackData);
+            
+            // Also update instructor rates for backward compatibility (total points)
+            updateInstructorRates(feedbackData);
+            
+            // Update button to show saved state
+            const saveBtn = document.getElementById(`saveBtn_${courseIndex}_${sessionIndex}`);
+            saveBtn.innerHTML = '<i class="fas fa-check-circle"></i> Saved';
+            saveBtn.classList.add('saved');
+            saveBtn.disabled = true;
+            
+            // Update status
+            const statusEl = document.getElementById(`status_${courseIndex}_${sessionIndex}`);
+            if (statusEl) {
+                statusEl.textContent = 'Rated ✓';
+            }
+            
+            // Clear session storage for this session
+            sessionStorage.removeItem(`session_rating_${courseIndex}_${sessionIndex}`);
+            
+            showToast('Rating and feedback saved successfully!');
+            
+            // Refresh courses grid to update progress
+            setTimeout(() => loadCourses(), 500);
+        }
+
+        // New function to save to feedbackArray
+        function saveToFeedbackArray(feedbackData) {
+            const feedbackArray = getFeedbackArray();
+            
+            // Check if this exact feedback already exists (prevent duplicates)
+            const exists = feedbackArray.some(f => 
+                f.systemName === feedbackData.systemName &&
+                f.instructorName === feedbackData.instructorName &&
+                f.sessionIndex === feedbackData.sessionIndex &&
+                f.studentId === feedbackData.studentId
+            );
+            
+            if (!exists) {
+                feedbackArray.push(feedbackData);
+                saveFeedbackArray(feedbackArray);
+            }
+        }
+
+        // Update instructor rates for total points (kept for backward compatibility)
+        function updateInstructorRates(feedbackData) {
+            const rates = getInstructorRates();
+            
+            const existingIndex = rates.findIndex(r => 
+                r.instructorName === feedbackData.instructorName && 
+                r.systemName === feedbackData.systemName
+            );
+            
+            if (existingIndex !== -1) {
+                rates[existingIndex].totalPoints += feedbackData.rating;
+                rates[existingIndex].lastUpdated = new Date().toISOString();
+                
+                if (!rates[existingIndex].feedbacks) {
+                    rates[existingIndex].feedbacks = [];
+                }
+                
+                // Check if this session feedback already exists to avoid duplicate push
+                const feedbackExists = rates[existingIndex].feedbacks.some(f => 
+                    f.sessionIndex === feedbackData.sessionIndex
+                );
+                
+                if (!feedbackExists) {
+                    rates[existingIndex].feedbacks.push({
+                        sessionIndex: feedbackData.sessionIndex,
+                        sessionName: feedbackData.sessionName,
+                        rating: feedbackData.rating,
+                        feedback: feedbackData.feedback,
+                        timestamp: feedbackData.timestamp
+                    });
+                }
+            } else {
+                rates.push({
+                    instructorName: feedbackData.instructorName,
+                    systemName: feedbackData.systemName,
+                    totalPoints: feedbackData.rating,
+                    firstRated: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    feedbacks: [{
+                        sessionIndex: feedbackData.sessionIndex,
+                        sessionName: feedbackData.sessionName,
+                        rating: feedbackData.rating,
+                        feedback: feedbackData.feedback,
+                        timestamp: feedbackData.timestamp
+                    }]
+                });
+            }
+            
+            localStorage.setItem(INSTRUCTOR_RATES_KEY, JSON.stringify(rates));
+        }
+
+        // ============ SESSION RATING DATA MANAGEMENT ============
+        function getSessionRatingData(courseIndex, sessionIndex) {
+            const key = `session_rating_${courseIndex}_${sessionIndex}`;
+            const data = sessionStorage.getItem(key);
+            return data ? JSON.parse(data) : { rating: 0, feedback: '' };
+        }
+
+        function saveSessionRatingData(courseIndex, sessionIndex, data) {
+            const key = `session_rating_${courseIndex}_${sessionIndex}`;
+            sessionStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function loadModalSavedData(courseIndex) {
+            const courses = getRatingSystems();
+            const course = courses[courseIndex];
+            
+            if (!course || !course.sessions) return;
+
+            const firstInstructorName = course.instructors[0]?.name || '';
+            const lockStates = getLockStates(course.systemName, firstInstructorName);
+            
+            course.sessions.forEach((session, sessionIndex) => {
+                const isLocked = lockStates[sessionIndex] !== false;
+                const savedData = getSessionRatingData(courseIndex, sessionIndex);
+                const feedbackArray = getFeedbackArray();
+                
+                // Check if already saved in feedbackArray
+                const alreadySaved = feedbackArray.some(f => 
+                    f.systemName === course.systemName &&
+                    f.instructorName === firstInstructorName &&
+                    f.sessionIndex === sessionIndex
+                );
+                
+                if (alreadySaved) {
+                    const saveBtn = document.getElementById(`saveBtn_${courseIndex}_${sessionIndex}`);
+                    if (saveBtn) {
+                        saveBtn.innerHTML = '<i class="fas fa-check-circle"></i> Saved';
+                        saveBtn.classList.add('saved');
+                        saveBtn.disabled = true;
+                        
+                        const statusEl = document.getElementById(`status_${courseIndex}_${sessionIndex}`);
+                        if (statusEl) {
+                            statusEl.textContent = 'Rated ✓';
+                        }
+                    }
+                }
+                
+                // Restore unsaved stars/feedback if not locked
+                if (!isLocked && !alreadySaved) {
+                    if (savedData.rating > 0) {
+                        const starsContainer = document.getElementById(`stars_${courseIndex}_${sessionIndex}`);
+                        if (starsContainer) {
+                            const starButtons = starsContainer.querySelectorAll('.star-btn');
+                            starButtons.forEach((btn, index) => {
+                                if (index < savedData.rating) {
+                                    btn.classList.add('active');
+                                }
+                            });
+                        }
+                        
+                        const statusEl = document.getElementById(`status_${courseIndex}_${sessionIndex}`);
+                        if (statusEl) {
+                            statusEl.textContent = `${savedData.rating} star${savedData.rating > 1 ? 's' : ''} selected`;
+                            statusEl.classList.add('completed');
+                        }
+                    }
+                    
+                    if (savedData.feedback) {
+                        const feedbackTextarea = document.getElementById(`feedback_${courseIndex}_${sessionIndex}`);
+                        if (feedbackTextarea) {
+                            feedbackTextarea.value = savedData.feedback;
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============ HELPER FUNCTIONS ============
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============ TOAST NOTIFICATION ============
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            if (type === 'success') {
+                toast.style.borderLeftColor = '#2e8b6c';
+                toast.querySelector('i').style.color = '#2e8b6c';
+                toast.querySelector('i').className = 'fas fa-check-circle';
+            } else {
+                toast.style.borderLeftColor = '#b34a4a';
+                toast.querySelector('i').style.color = '#b34a4a';
+                toast.querySelector('i').className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============ LOGOUT FUNCTIONS ============
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function confirmLogout() {
+            window.location.href = 'login.html';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('courseModal');
+            if (event.target === modal) {
+                closeCourseModal();
+            }
+            
+            const logoutModal = document.getElementById('logoutModal');
+            if (event.target === logoutModal) {
+                closeLogoutModal();
+            }
+        });
+
+        // ESC key to close modals
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('courseModal');
+                if (modal.classList.contains('active')) {
+                    closeCourseModal();
+                }
+                
+                const logoutModal = document.getElementById('logoutModal');
+                if (logoutModal.classList.contains('active')) {
+                    closeLogoutModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

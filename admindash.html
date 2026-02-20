@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Dashboard · Admin Overview</title>
+    <!-- 3 IN 1: HTML, CSS, JAVASCRIPT – DASHBOARD SUMMARIZING ALL RATING SYSTEMS -->
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- reset – clean ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- UPPER BAR – light, with title and admin+logout ----- */
+        .top-bar {
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            color: #1e3d5b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-name {
+            font-weight: 650;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-sub {
+            font-weight: 440;
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #edf2f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.03);
+            letter-spacing: 0.2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f4f9fd;
+            padding: 8px 18px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .admin-badge i {
+            font-size: 1.2rem;
+            color: #2a6b7a;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: #8a4a4a;
+            font-weight: 550;
+            text-decoration: none;
+            border: 1px solid #f0d6d6;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            cursor: pointer;
+        }
+
+        .logout-btn i {
+            font-size: 1.1rem;
+            color: #b35959;
+        }
+
+        .logout-btn:hover {
+            background: #fdf3f2;
+            border-color: #dcb5b5;
+            color: #6d3b3b;
+            box-shadow: 0 6px 14px rgba(180, 90, 90, 0.08);
+        }
+
+        /* ----- PAGE TITLE BAR – Dashboard ----- */
+        .page-title-bar {
+            width: 100%;
+            height: 56px;
+            background: #fafcff;
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            flex-shrink: 0;
+        }
+
+        .page-title-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-icon {
+            width: 36px;
+            height: 36px;
+            background: #eaf0f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c6b7c;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-breadcrumb {
+            color: #6b8a9a;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .page-breadcrumb i {
+            margin: 0 6px;
+            font-size: 0.7rem;
+            color: #8aa7b5;
+        }
+
+        /* ----- LAST UPDATED INDICATOR ----- */
+        .last-updated {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4f7182;
+            font-size: 0.9rem;
+            background: #ecf3f7;
+            padding: 6px 18px;
+            border-radius: 100px;
+        }
+
+        .last-updated i {
+            color: #4682a0;
+        }
+
+        /* ----- main flex container (sidebar + main content) ----- */
+        .app-frame {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ---------- SIDEBAR –– SLIM, LIGHT, ICON-ONLY (hover tooltips) ---------- */
+        .sidebar {
+            width: 88px;
+            background: #ffffff;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+            gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02);
+            border-right: 1px solid #edf0f5;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            color: #496c7c;
+            text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+            background: #f8fcff;
+            border: 1px solid #e6ecf0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            color: #3e6272;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #eaf1f9;
+            border-color: #b8cfda;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(60, 110, 130, 0.08);
+        }
+
+        .nav-item:hover i {
+            color: #1a4c64;
+        }
+
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 55, 70, 0.95);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 480;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,20,30,0.15);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            z-index: 1000;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 110%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-item:hover::after {
+            opacity: 1;
+            left: 125%;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            left: 115%;
+        }
+
+        .nav-item.active {
+            background: #e1ecf2;
+            border-color: #aac1cc;
+        }
+
+        .nav-item.active i {
+            color: #1c5565;
+        }
+
+        /* ----- MAIN CONTENT AREA (scrollable) ----- */
+        .main-content {
+            flex: 1;
+            background: #f8fbfe;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ----- STATS CARDS GRID ----- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 16px 28px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+            border-color: #d0dfe8;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #eaf0f5, #dde9f0);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 1.8rem;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 550;
+            color: #5f7d8c;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .stat-number {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1a3b4a;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            color: #2e8b6c;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ----- SECTION HEADERS ----- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a3b4a;
+        }
+
+        .section-title i {
+            color: #4682a0;
+            font-size: 1.3rem;
+        }
+
+        .view-all-link {
+            color: #1e5f7a;
+            text-decoration: none;
+            font-weight: 550;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: #ecf3f7;
+            border-radius: 100px;
+            transition: all 0.15s;
+        }
+
+        .view-all-link:hover {
+            background: #dbe9f0;
+        }
+
+        /* ----- SYSTEMS OVERVIEW CARDS (horizontal scroll) ----- */
+        .systems-overview {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .systems-horizontal {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-top: 8px;
+        }
+
+        .system-mini-card {
+            flex: 0 0 280px;
+            background: #fafdff;
+            border: 1px solid #e6ecf0;
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .system-mini-card:hover {
+            background: white;
+            border-color: #b8cfda;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.04);
+        }
+
+        .system-mini-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .system-mini-title {
+            font-weight: 650;
+            color: #1a3b4a;
+            font-size: 1.1rem;
+        }
+
+        .system-mini-badge {
+            background: #e1ecf2;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: #1c5565;
+            font-weight: 550;
+        }
+
+        .system-mini-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .system-mini-stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2e5a6b;
+            font-size: 0.9rem;
+        }
+
+        .system-mini-stat i {
+            width: 20px;
+            color: #568296;
+        }
+
+        /* ----- INSIGHTS GRID ----- */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .insight-header i {
+            font-size: 1.3rem;
+            color: #4682a0;
+        }
+
+        .insight-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a3b4a;
+        }
+
+        .insight-list {
+            list-style: none;
+        }
+
+        .insight-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf1f5;
+        }
+
+        .insight-list li:last-child {
+            border-bottom: none;
+        }
+
+        .insight-list span {
+            color: #2e5a6b;
+        }
+
+        .insight-list strong {
+            color: #1a3b4a;
+            font-weight: 650;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background: white;
+            border-radius: 24px;
+            border: 1px dashed #cbd5e0;
+            color: #5f7d8c;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #a0c0ce;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-weight: 500;
+            color: #365f6e;
+            margin-bottom: 8px;
+        }
+
+        /* ----- TOAST NOTIFICATION ----- */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 28px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 100px;
+            box-shadow: 0 16px 32px rgba(0,20,30,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #1a485c;
+            border-left: 6px solid #2e8b6c;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+            z-index: 10001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            color: #2e8b6c;
+            font-size: 1.2rem;
+        }
+
+        /* ----- LOGOUT MODAL ----- */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-modal-card {
+            background: white;
+            width: 400px;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.2);
+            padding: 32px 28px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: #e2ecf2;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+        }
+
+        .modal-message {
+            margin: 12px 0 28px 8px;
+            color: #3f5662;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 560;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn-secondary {
+            background: #f0f4f7;
+            color: #2c4a5c;
+            border-color: #dae2e8;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e3eaef;
+        }
+
+        .modal-btn-danger {
+            background: #b94747;
+            color: white;
+        }
+
+        .modal-btn-danger:hover {
+            background: #a33a3a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ███ UPPER BAR – SholarX title and admin + logout -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <div class="admin-badge">
+                <i class="fas fa-user-circle"></i>
+                <span>Admin</span>
+            </div>
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ███ PAGE TITLE BAR – Dashboard -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <span class="page-title">Dashboard</span>
+            <span class="page-breadcrumb">
+                <i class="fas fa-chevron-right"></i> Admin Overview
+            </span>
+        </div>
+        <div id="lastUpdated" class="last-updated">
+            <i class="fas fa-sync-alt"></i>
+            <span>Loading...</span>
+        </div>
+    </div>
+
+    <!-- ███ SIDEBAR + MAIN CONTENT -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="admindash.html" class="nav-item active" data-tooltip="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="systems.html" class="nav-item" data-tooltip="System">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="reports.html" class="nav-item" data-tooltip="Reports">
+                    <i class="fas fa-file-alt"></i>
+                </a>
+                <a href="recommendation.html" class="nav-item" data-tooltip="Recommendation">
+                    <i class="fas fa-thumbs-up"></i>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT – Dashboard Analytics -->
+        <main class="main-content">
+            <!-- STATS CARDS - Real-time from ratingsystems array -->
+            <div class="stats-grid" id="statsGrid">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- RECENT SYSTEMS OVERVIEW -->
+            <div class="systems-overview">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h2>Active Rating Systems</h2>
+                    </div>
+                    <a href="systems.html" class="view-all-link">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div id="systemsHorizontal" class="systems-horizontal">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- INSIGHTS & ANALYTICS GRID -->
+            <div class="insights-grid">
+                <!-- Top Instructors Card -->
+                <div class="insight-card" id="topInstructorsCard">
+                    <div class="insight-header">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>Top Instructors</h3>
+                    </div>
+                    <ul class="insight-list" id="topInstructorsList">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+
+                <!-- System Distribution Card -->
+                <div class="insight-card" id="systemDistributionCard">
+                    <div class="insight-header">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>System Distribution</h3>
+                    </div>
+                    <ul class="insight-list" id="systemDistributionList">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="insight-card" id="quickStatsCard">
+                    <div class="insight-header">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Quick Insights</h3>
+                    </div>
+                    <ul class="insight-list" id="quickStatsList">
+                        <!-- Dynamically populated -->
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ███ TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Dashboard updated</span>
+    </div>
+
+    <!-- ███ LOGOUT CONFIRMATION MODAL -->
+    <div id="logoutModal" class="logout-modal-overlay">
+        <div class="logout-modal-card">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: #fff2f0; color: #b44a4a;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="modal-title">Log out</span>
+            </div>
+            <div class="modal-message">
+                Are you sure you want to sign out of your SholarX account?
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button class="modal-btn modal-btn-danger" onclick="confirmLogout()">Yes, log out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ GLOBAL STATE ============
+        const STORAGE_KEY = 'ratingsystems';
+        let refreshInterval = null;
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            
+            // Auto-refresh every 10 seconds to reflect changes from systems.html
+            refreshInterval = setInterval(loadDashboardData, 10000);
+            
+            // Also refresh when tab becomes visible again
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    loadDashboardData();
+                }
+            });
+        });
+
+        // Clean up interval on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) clearInterval(refreshInterval);
+        });
+
+        // ============ LOCAL STORAGE FUNCTIONS ============
+        function getSystems() {
+            const systems = localStorage.getItem(STORAGE_KEY);
+            return systems ? JSON.parse(systems) : [];
+        }
+
+        // ============ DASHBOARD DATA AGGREGATION ============
+        function aggregateDashboardData() {
+            const systems = getSystems();
+            
+            // Basic counts
+            const totalSystems = systems.length;
+            let totalInstructors = 0;
+            let totalStudents = 0;
+            let totalSessions = 0;
+            
+            // Instructor frequency map
+            const instructorMap = new Map();
+            
+            // System size distribution
+            let smallSystems = 0;  // 1-10 students
+            let mediumSystems = 0; // 11-30 students
+            let largeSystems = 0;  // 31+ students
+            
+            // Recently created systems (last 5)
+            const recentSystems = [...systems]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+            
+            systems.forEach(system => {
+                totalInstructors += system.instructors?.length || 0;
+                totalStudents += system.students?.length || 0;
+                totalSessions += system.sessions?.length || 0;
+                
+                // Count instructors
+                system.instructors?.forEach(instructor => {
+                    const name = instructor.name;
+                    instructorMap.set(name, (instructorMap.get(name) || 0) + 1);
+                });
+                
+                // Size distribution
+                const studentCount = system.students?.length || 0;
+                if (studentCount <= 10) smallSystems++;
+                else if (studentCount <= 30) mediumSystems++;
+                else largeSystems++;
+            });
+            
+            // Sort instructors by frequency
+            const topInstructors = Array.from(instructorMap.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            // Calculate averages
+            const avgStudentsPerSystem = totalSystems ? (totalStudents / totalSystems).toFixed(1) : 0;
+            const avgInstructorsPerSystem = totalSystems ? (totalInstructors / totalSystems).toFixed(1) : 0;
+            
+            // Find system with most students
+            let largestSystem = null;
+            let largestStudentCount = 0;
+            systems.forEach(system => {
+                if (system.students?.length > largestStudentCount) {
+                    largestStudentCount = system.students.length;
+                    largestSystem = system.systemName;
+                }
+            });
+            
+            return {
+                totalSystems,
+                totalInstructors,
+                totalStudents,
+                totalSessions,
+                recentSystems,
+                topInstructors,
+                smallSystems,
+                mediumSystems,
+                largeSystems,
+                avgStudentsPerSystem,
+                avgInstructorsPerSystem,
+                largestSystem,
+                largestStudentCount,
+                timestamp: new Date().toLocaleTimeString()
+            };
+        }
+
+        // ============ RENDER DASHBOARD ============
+        function loadDashboardData() {
+            const data = aggregateDashboardData();
+            
+            renderStatsCards(data);
+            renderRecentSystems(data.recentSystems);
+            renderTopInstructors(data.topInstructors);
+            renderSystemDistribution(data);
+            renderQuickStats(data);
+            updateLastUpdated(data.timestamp);
+        }
+
+        function renderStatsCards(data) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Systems</div>
+                        <div class="stat-number">${data.totalSystems}</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-book-open"></i> Active courses
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Instructors</div>
+                        <div class="stat-number">${data.totalInstructors}</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-user-tie"></i> Avg ${data.avgInstructorsPerSystem} per system
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Students</div>
+                        <div class="stat-number">${data.totalStudents}</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-users"></i> Avg ${data.avgStudentsPerSystem} per system
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Sessions</div>
+                        <div class="stat-number">${data.totalSessions}</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-clock"></i> Across all systems
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecentSystems(systems) {
+            const container = document.getElementById('systemsHorizontal');
+            
+            if (!systems || systems.length === 0) {
+                container.innerHTML = `
+                    <div style="width: 100%; text-align: center; padding: 32px; color: #5f7d8c;">
+                        <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 12px;"></i>
+                        <p>No rating systems created yet</p>
+                        <p style="font-size: 0.9rem; margin-top: 8px;">Go to Systems page to create one</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = systems.map(system => `
+                <div class="system-mini-card">
+                    <div class="system-mini-header">
+                        <span class="system-mini-title">${escapeHtml(system.systemName)}</span>
+                        <span class="system-mini-badge">${system.students?.length || 0} students</span>
+                    </div>
+                    <div class="system-mini-stats">
+                        <div class="system-mini-stat">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>${system.instructors?.length || 0} Instructors</span>
+                        </div>
+                        <div class="system-mini-stat">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${system.sessions?.length || 0} Sessions</span>
+                        </div>
+                        <div class="system-mini-stat">
+                            <i class="fas fa-clock"></i>
+                            <span>Created: ${new Date(system.createdAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTopInstructors(instructors) {
+            const list = document.getElementById('topInstructorsList');
+            
+            if (!instructors || instructors.length === 0) {
+                list.innerHTML = `<li style="justify-content: center; color: #6e8b9b;">No instructors found</li>`;
+                return;
+            }
+            
+            list.innerHTML = instructors.map(([name, count]) => `
+                <li>
+                    <span><i class="fas fa-user-tie" style="color: #4682a0; width: 20px;"></i> ${escapeHtml(name)}</span>
+                    <strong>${count} ${count === 1 ? 'system' : 'systems'}</strong>
+                </li>
+            `).join('');
+        }
+
+        function renderSystemDistribution(data) {
+            const list = document.getElementById('systemDistributionList');
+            
+            list.innerHTML = `
+                <li>
+                    <span><i class="fas fa-school" style="color: #4682a0;"></i> Small (1-10 students)</span>
+                    <strong>${data.smallSystems}</strong>
+                </li>
+                <li>
+                    <span><i class="fas fa-building" style="color: #4682a0;"></i> Medium (11-30 students)</span>
+                    <strong>${data.mediumSystems}</strong>
+                </li>
+                <li>
+                    <span><i class="fas fa-university" style="color: #4682a0;"></i> Large (31+ students)</span>
+                    <strong>${data.largeSystems}</strong>
+                </li>
+                <li style="border-top: 1px solid #ecf1f5; margin-top: 8px; padding-top: 16px;">
+                    <span><i class="fas fa-chart-line" style="color: #4682a0;"></i> Average class size</span>
+                    <strong>${data.avgStudentsPerSystem} students</strong>
+                </li>
+            `;
+        }
+
+        function renderQuickStats(data) {
+            const list = document.getElementById('quickStatsList');
+            
+            list.innerHTML = `
+                <li>
+                    <span><i class="fas fa-arrow-up" style="color: #2e8b6c;"></i> Largest system</span>
+                    <strong>${data.largestSystem ? escapeHtml(data.largestSystem) : 'N/A'}</strong>
+                </li>
+                <li>
+                    <span><i class="fas fa-users" style="color: #4682a0;"></i> Most students</span>
+                    <strong>${data.largestStudentCount || 0}</strong>
+                </li>
+                <li>
+                    <span><i class="fas fa-percentage" style="color: #4682a0;"></i> Instructor ratio</span>
+                    <strong>${data.totalStudents ? (data.totalInstructors / data.totalStudents * 100).toFixed(1) : 0}%</strong>
+                </li>
+                <li>
+                    <span><i class="fas fa-calendar-week" style="color: #4682a0;"></i> Sessions per system</span>
+                    <strong>${data.totalSystems ? (data.totalSessions / data.totalSystems).toFixed(1) : 0}</strong>
+                </li>
+            `;
+        }
+
+        function updateLastUpdated(timestamp) {
+            const container = document.getElementById('lastUpdated');
+            container.innerHTML = `
+                <i class="fas fa-sync-alt"></i>
+                <span>Updated: ${timestamp}</span>
+            `;
+            
+            // Briefly highlight to show refresh
+            container.style.background = '#dbe9f0';
+            setTimeout(() => {
+                container.style.background = '#ecf3f7';
+            }, 300);
+        }
+
+        // Helper to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============ TOAST NOTIFICATION ============
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            if (type === 'success') {
+                toast.style.borderLeftColor = '#2e8b6c';
+                toast.querySelector('i').style.color = '#2e8b6c';
+                toast.querySelector('i').className = 'fas fa-check-circle';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============ LOGOUT FUNCTIONS ============
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function confirmLogout() {
+            window.location.href = 'login.html';
+        }
+
+        // Expose functions globally
+        window.openLogoutModal = openLogoutModal;
+        window.closeLogoutModal = closeLogoutModal;
+        window.confirmLogout = confirmLogout;
+    </script>
+</body>
+</html>

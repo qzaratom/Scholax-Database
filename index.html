@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · intelligent feedback</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #e8f2f8;
+        }
+
+        /* top bar with balanced title and descriptor */
+        .top-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 16px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .left-group {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .title-main {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.01em;
+        }
+
+        .title-descriptor {
+            font-size: 1rem;
+            font-weight: 450;
+            color: #266076;
+            background: #e3f0f7;
+            padding: 6px 22px;
+            border-radius: 60px;
+            border: 1px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        /* button in top bar */
+        .nav-login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #1a4c64;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 10px 28px;
+            border-radius: 60px;
+            box-shadow: 0 8px 18px -4px rgba(26, 76, 100, 0.25);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            white-space: nowrap;
+        }
+
+        .nav-login-btn:hover {
+            background: #0e3a4f;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px -6px rgba(20, 75, 100, 0.35);
+        }
+
+        .nav-login-btn i {
+            font-size: 0.95rem;
+        }
+
+        /* main content - with background image and gradient overlay */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 60px;
+            background: url('imag.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+        /* Gradient overlay that fades from white (left) to transparent (right) */
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, 
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(255, 255, 255, 0.7) 20%,
+                rgba(255, 255, 255, 0.4) 40%,
+                rgba(255, 255, 255, 0.1) 60%,
+                rgba(255, 255, 255, 0) 80%);
+            pointer-events: none; /* allows clicking through to content */
+            z-index: 1;
+        }
+
+        .content-left {
+            position: relative;
+            z-index: 2;
+            max-width: 600px; /* slightly narrower to let image show on right */
+            width: 100%;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #1a5b72;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tagline i {
+            color: #1f7a94;
+            font-size: 1.8rem;
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 50%;
+        }
+
+        .main-headline {
+            font-size: 3.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #0c3041;
+            margin-bottom: 24px;
+        }
+
+        .main-headline span {
+            background: linear-gradient(135deg, #146b82, #1d95a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: #235f77;
+            max-width: 500px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.3);
+            padding: 16px 28px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* feature highlights - horizontal */
+        .feature-highlights {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.5);
+            padding: 8px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .feature-item i {
+            font-size: 1.3rem;
+            color: #16697c;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 30px;
+        }
+
+        .feature-item span {
+            font-weight: 500;
+            color: #1b5d74;
+            font-size: 0.95rem;
+        }
+
+        /* footer note - left aligned */
+        .footer-note {
+            margin-top: 20px;
+            color: #2c657b;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .footer-note a {
+            color: #1a4c64;
+            text-decoration: none;
+            border-bottom: 1px dotted #7faec2;
+        }
+
+        .footer-note a:hover {
+            color: #0d3647;
+        }
+
+        /* responsive */
+        @media (max-width: 1000px) {
+            .top-bar {
+                padding: 16px 30px;
+            }
+            .left-group {
+                gap: 12px;
+            }
+            .main-content {
+                padding: 40px 30px;
+                justify-content: center;
+            }
+            .content-left {
+                max-width: 100%;
+            }
+            .main-content::before {
+                background: linear-gradient(to right, 
+                    rgba(255, 255, 255, 0.8) 0%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- top bar with balanced title and descriptor -->
+    <div class="top-bar">
+        <div class="left-group">
+            <span class="title-main">SholarX</span>
+            <span class="title-descriptor">Rating & Feedback System</span>
+        </div>
+        
+        <!-- Access Platform button in top bar -->
+        <a href="login.html" class="nav-login-btn">
+            <i class="fas fa-arrow-right-to-bracket"></i> Access Platform
+        </a>
+    </div>
+
+    <!-- main content with background image - text left aligned, gradient overlay fades to clear on right -->
+    <div class="main-content">
+        <div class="content-left">
+            <div class="tagline">
+                <i class="fas fa-robot"></i> AI recommendations and solutions
+            </div>
+            
+            <h2 class="main-headline">
+                Turn feedback into <span>intelligent action</span>
+            </h2>
+
+            <div class="description">
+                Collect real time session ratings, receive AI powered insights, and improve teaching quality all in one place.
+            </div>
+
+            <!-- feature highlights as chips -->
+            <div class="feature-highlights">
+                <div class="feature-item">
+                    <i class="fas fa-star"></i>
+                    <span>Rate sessions</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Track feedback</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>AI insights</span>
+                </div>
+            </div>
+
+            <!-- footer note -->
+            <div class="footer-note">
+                <a href="#">learn more</a> · intelligent feedback platform
+            </div>
+        </div>
+    </div>
+</body>
+</html>

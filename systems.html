@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Systems · Rating & Feedback Configuration</title>
+    <!-- 3 IN 1: HTML, CSS, JAVASCRIPT – FULL SYSTEM MANAGEMENT WITH LOCAL STORAGE -->
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- reset – clean ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- UPPER BAR – light, with title and admin+logout ----- */
+        .top-bar {
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            color: #1e3d5b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-name {
+            font-weight: 650;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-sub {
+            font-weight: 440;
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #edf2f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.03);
+            letter-spacing: 0.2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f4f9fd;
+            padding: 8px 18px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .admin-badge i {
+            font-size: 1.2rem;
+            color: #2a6b7a;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: #8a4a4a;
+            font-weight: 550;
+            text-decoration: none;
+            border: 1px solid #f0d6d6;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            cursor: pointer;
+        }
+
+        .logout-btn i {
+            font-size: 1.1rem;
+            color: #b35959;
+        }
+
+        .logout-btn:hover {
+            background: #fdf3f2;
+            border-color: #dcb5b5;
+            color: #6d3b3b;
+            box-shadow: 0 6px 14px rgba(180, 90, 90, 0.08);
+        }
+
+        /* ----- PAGE TITLE BAR – small bar below upper bar ----- */
+        .page-title-bar {
+            width: 100%;
+            height: 56px;
+            background: #fafcff;
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            flex-shrink: 0;
+        }
+
+        .page-title-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-icon {
+            width: 36px;
+            height: 36px;
+            background: #eaf0f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c6b7c;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-breadcrumb {
+            color: #6b8a9a;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .page-breadcrumb i {
+            margin: 0 6px;
+            font-size: 0.7rem;
+            color: #8aa7b5;
+        }
+
+        /* ----- CREATE SYSTEM BUTTON (right side of title bar) ----- */
+        .create-system-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a4c64;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: white;
+            font-weight: 550;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(26, 76, 100, 0.2);
+        }
+
+        .create-system-btn i {
+            font-size: 1rem;
+        }
+
+        .create-system-btn:hover {
+            background: #0e3a4f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(26, 76, 100, 0.25);
+        }
+
+        /* ----- SEARCH BAR SECTION (above systems grid) ----- */
+        .search-section {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b8e9c;
+            font-size: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border: 1.5px solid #e2eaf0;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            background: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4682a0;
+            box-shadow: 0 0 0 3px rgba(70, 130, 160, 0.1);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #8aa7b5;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-clear:hover {
+            color: #4a6b7a;
+        }
+
+        .results-count {
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #ecf3f7;
+            padding: 8px 18px;
+            border-radius: 100px;
+        }
+
+        /* ----- main flex container (sidebar + main content) ----- */
+        .app-frame {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ---------- SIDEBAR –– SLIM, LIGHT, ICON-ONLY (hover tooltips) ---------- */
+        .sidebar {
+            width: 88px;
+            background: #ffffff;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+            gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02);
+            border-right: 1px solid #edf0f5;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            color: #496c7c;
+            text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+            background: #f8fcff;
+            border: 1px solid #e6ecf0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            color: #3e6272;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #eaf1f9;
+            border-color: #b8cfda;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(60, 110, 130, 0.08);
+        }
+
+        .nav-item:hover i {
+            color: #1a4c64;
+        }
+
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 55, 70, 0.95);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 480;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,20,30,0.15);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            z-index: 1000;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 110%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-item:hover::after {
+            opacity: 1;
+            left: 125%;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            left: 115%;
+        }
+
+        .nav-item.active {
+            background: #e1ecf2;
+            border-color: #aac1cc;
+        }
+
+        .nav-item.active i {
+            color: #1c5565;
+        }
+
+        /* ----- MAIN CONTENT AREA (scrollable) ----- */
+        .main-content {
+            flex: 1;
+            background: #f8fbfe;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ----- SYSTEMS GRID ----- */
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        /* ----- SYSTEM CARD – SUMMARY VIEW ----- */
+        .system-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .system-card:hover {
+            box-shadow: 0 16px 28px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+            border-color: #d0dfe8;
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .system-title {
+            font-size: 1.25rem;
+            font-weight: 650;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .system-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .system-edit, .system-delete {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 10px;
+            transition: all 0.15s;
+            color: #5f7d8c;
+        }
+
+        .system-edit:hover {
+            background: #e6f0f5;
+            color: #1e5f7a;
+        }
+
+        .system-delete:hover {
+            background: #fee9e9;
+            color: #b34a4a;
+        }
+
+        /* ----- SUMMARY STATS – clean, minimal, just counts ----- */
+        .system-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid #ecf1f5;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2e5a6b;
+            font-size: 0.95rem;
+        }
+
+        .summary-icon {
+            width: 32px;
+            color: #568296;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .summary-badge {
+            background: #ecf3f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 550;
+            color: #1a4c64;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #d0dfe8;
+        }
+
+        .summary-badge i {
+            font-size: 0.85rem;
+            color: #3e7486;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background: white;
+            border-radius: 24px;
+            border: 1px dashed #cbd5e0;
+            color: #5f7d8c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #a0c0ce;
+        }
+
+        .empty-state h3 {
+            font-weight: 500;
+            color: #365f6e;
+        }
+
+        /* ----- MODAL – Create/Edit System Form ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: white;
+            width: 600px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.25);
+            padding: 32px;
+            transform: scale(0.96) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.12, 0.71, 0.33, 1);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: #e2ecf2;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 550;
+            margin-bottom: 8px;
+            color: #2a4d5e;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e2eaf0;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            transition: all 0.15s;
+            background: #fafdff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4682a0;
+            box-shadow: 0 0 0 3px rgba(70, 130, 160, 0.1);
+            background: white;
+        }
+
+        .instructor-row, .session-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .instructor-row .form-control, .session-row .form-control {
+            flex: 1;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #a06a6a;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .remove-btn:hover {
+            background: #fce9e9;
+            color: #b34a4a;
+        }
+
+        .add-btn {
+            background: none;
+            border: 1.5px dashed #9bb7c4;
+            padding: 10px 20px;
+            border-radius: 100px;
+            color: #2e6b7c;
+            font-size: 0.9rem;
+            font-weight: 550;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            background: #ecf5f9;
+            border-color: #5f99ae;
+        }
+
+        .student-badge-container {
+            background: #f5fafc;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 560;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn-primary {
+            background: #1a4c64;
+            color: white;
+            box-shadow: 0 8px 16px rgba(26, 76, 100, 0.16);
+        }
+
+        .modal-btn-primary:hover {
+            background: #0e3a4f;
+            transform: scale(0.98);
+        }
+
+        .modal-btn-secondary {
+            background: #f0f4f7;
+            color: #2c4a5c;
+            border-color: #dae2e8;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e3eaef;
+        }
+
+        /* ----- TOAST NOTIFICATION ----- */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 28px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 100px;
+            box-shadow: 0 16px 32px rgba(0,20,30,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #1a485c;
+            border-left: 6px solid #2e8b6c;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+            z-index: 10001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            color: #2e8b6c;
+            font-size: 1.2rem;
+        }
+
+        /* ----- LOGOUT MODAL (keep existing) ----- */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-modal-card {
+            background: white;
+            width: 400px;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.2);
+            padding: 32px 28px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ███ UPPER BAR – SholarX title and admin + logout -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <div class="admin-badge">
+                <i class="fas fa-user-circle"></i>
+                <span>Admin</span>
+            </div>
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ███ PAGE TITLE BAR – Systems with Create Button -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <span class="page-title">Systems</span>
+            <span class="page-breadcrumb">
+                <i class="fas fa-chevron-right"></i> Configuration
+            </span>
+        </div>
+        <button id="createSystemBtn" class="create-system-btn">
+            <i class="fas fa-plus-circle"></i>
+            Create Rating & Feedback System
+        </button>
+    </div>
+
+    <!-- ███ SIDEBAR + MAIN CONTENT -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="admindash.html" class="nav-item" data-tooltip="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="systems.html" class="nav-item active" data-tooltip="System">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="reports.html" class="nav-item" data-tooltip="Reports">
+                    <i class="fas fa-file-alt"></i>
+                </a>
+                <a href="recommendation.html" class="nav-item" data-tooltip="Recommendation">
+                    <i class="fas fa-thumbs-up"></i>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT – Search + Systems Grid -->
+        <main class="main-content">
+            <!-- SEARCH SECTION – Added above systems grid -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by system name, instructor, or session...">
+                    <button id="searchClearBtn" class="search-clear" onclick="clearSearch()">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+                <span id="resultsCount" class="results-count">All systems</span>
+            </div>
+
+            <div id="systemsGrid" class="systems-grid">
+                <!-- Systems will be dynamically loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- ███ CREATE/EDIT SYSTEM MODAL -->
+    <div id="systemModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <span id="modalTitle" class="modal-title">Create Rating System</span>
+            </div>
+            <form id="systemForm">
+                <input type="hidden" id="editIndex" value="-1">
+                
+                <!-- System Name (Course) -->
+                <div class="form-group">
+                    <label class="form-label">System Name (Course)</label>
+                    <input type="text" id="systemName" class="form-control" placeholder="e.g. Introduction to Computer Science" required>
+                </div>
+
+                <!-- Instructors (max 3) -->
+                <div class="form-group">
+                    <label class="form-label">Instructors (Max 3)</label>
+                    <div id="instructorsContainer">
+                        <!-- Instructor rows will be added here -->
+                    </div>
+                    <button type="button" id="addInstructorBtn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Instructor
+                    </button>
+                </div>
+
+                <!-- Students (unlimited) -->
+                <div class="form-group">
+                    <label class="form-label">Students</label>
+                    <div id="studentsContainer">
+                        <!-- Student rows will be added here -->
+                    </div>
+                    <button type="button" id="addStudentBtn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Student
+                    </button>
+                </div>
+
+                <!-- Sessions -->
+                <div class="form-group">
+                    <label class="form-label">Sessions</label>
+                    <div id="sessionsContainer">
+                        <!-- Session rows will be added here -->
+                    </div>
+                    <button type="button" id="addSessionBtn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Session
+                    </button>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancelModalBtn" class="modal-btn modal-btn-secondary">Cancel</button>
+                    <button type="submit" id="saveSystemBtn" class="modal-btn modal-btn-primary">
+                        <i class="fas fa-save"></i> Create System
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ███ TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">System created successfully</span>
+    </div>
+
+    <!-- ███ LOGOUT CONFIRMATION MODAL -->
+    <div id="logoutModal" class="logout-modal-overlay">
+        <div class="logout-modal-card">
+            <div class="modal-header">
+                <div class="modal-icon" style="background: #fff2f0; color: #b44a4a;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="modal-title">Log out</span>
+            </div>
+            <div class="modal-message" style="margin: 12px 0 28px 8px; color: #3f5662;">
+                Are you sure you want to sign out of your SholarX account?
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button class="modal-btn" style="background: #b94747; color: white;" onclick="confirmLogout()">Yes, log out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ GLOBAL STATE ============
+        const STORAGE_KEY = 'ratingsystems';
+        let currentEditIndex = -1;
+        let currentSearchTerm = '';
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemsFromStorage();
+            setupEventListeners();
+            // Initialize with one empty instructor, student, session
+            addInstructorRow();
+            addStudentRow();
+            addSessionRow();
+        });
+
+        // ============ LOCAL STORAGE FUNCTIONS ============
+        function getSystems() {
+            const systems = localStorage.getItem(STORAGE_KEY);
+            return systems ? JSON.parse(systems) : [];
+        }
+
+        function saveSystems(systems) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(systems));
+        }
+
+        // ============ SEARCH FUNCTIONALITY ============
+        function filterSystems(searchTerm) {
+            const systems = getSystems();
+            if (!searchTerm.trim()) return systems;
+            
+            const term = searchTerm.toLowerCase().trim();
+            return systems.filter(system => {
+                // Search by system name
+                if (system.systemName.toLowerCase().includes(term)) return true;
+                
+                // Search by instructor names
+                if (system.instructors.some(inst => inst.name.toLowerCase().includes(term))) return true;
+                
+                // Search by session names
+                if (system.sessions.some(session => session.toLowerCase().includes(term))) return true;
+                
+                return false;
+            });
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('searchClearBtn');
+            currentSearchTerm = searchInput.value;
+            
+            // Show/hide clear button
+            clearBtn.style.display = currentSearchTerm ? 'block' : 'none';
+            
+            const filteredSystems = filterSystems(currentSearchTerm);
+            renderSystemsGrid(filteredSystems);
+            
+            // Update results count
+            const resultsCount = document.getElementById('resultsCount');
+            const totalSystems = getSystems().length;
+            if (currentSearchTerm) {
+                resultsCount.textContent = `${filteredSystems.length} of ${totalSystems} systems`;
+            } else {
+                resultsCount.textContent = `All systems (${totalSystems})`;
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        }
+
+        // ============ RENDER SYSTEMS GRID – SUMMARY ONLY ============
+        function renderSystemsGrid(systems) {
+            const grid = document.getElementById('systemsGrid');
+            
+            if (systems.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>${currentSearchTerm ? 'No matching systems found' : 'No Rating Systems Created'}</h3>
+                        <p style="color: #6e8b9b;">
+                            ${currentSearchTerm ? 'Try a different search term' : 'Click "Create Rating & Feedback System" to get started'}
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = systems.map((system, index) => {
+                // Find original index for edit/delete
+                const originalIndex = getSystems().findIndex(s => 
+                    s.systemName === system.systemName && 
+                    s.createdAt === system.createdAt
+                );
+                
+                return `
+                <div class="system-card" data-index="${originalIndex}">
+                    <div class="system-header">
+                        <h3 class="system-title">${escapeHtml(system.systemName)}</h3>
+                        <div class="system-actions">
+                            <button class="system-edit" onclick="editSystem(${originalIndex})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="system-delete" onclick="deleteSystem(${originalIndex})" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="system-summary">
+                        <div class="summary-item">
+                            <span class="summary-icon"><i class="fas fa-user-tie"></i></span>
+                            <span class="summary-badge">
+                                <i class="fas fa-users"></i> ${system.instructors.length} Instructor${system.instructors.length !== 1 ? 's' : ''}
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-icon"><i class="fas fa-user-graduate"></i></span>
+                            <span class="summary-badge">
+                                <i class="fas fa-users"></i> ${system.students.length} Student${system.students.length !== 1 ? 's' : ''}
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-icon"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="summary-badge">
+                                <i class="fas fa-clock"></i> ${system.sessions.length} Session${system.sessions.length !== 1 ? 's' : ''}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function loadSystemsFromStorage() {
+            // Reset search input when loading all systems
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                currentSearchTerm = '';
+                document.getElementById('searchClearBtn').style.display = 'none';
+            }
+            performSearch();
+        }
+
+        // Helper to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============ MODAL CONTROLS ============
+        function openCreateModal() {
+            currentEditIndex = -1;
+            document.getElementById('editIndex').value = -1;
+            document.getElementById('modalTitle').textContent = 'Create Rating System';
+            document.getElementById('saveSystemBtn').innerHTML = '<i class="fas fa-save"></i> Create System';
+            
+            // Reset form
+            document.getElementById('systemForm').reset();
+            document.getElementById('systemName').value = '';
+            
+            // Clear and add default rows
+            document.getElementById('instructorsContainer').innerHTML = '';
+            document.getElementById('studentsContainer').innerHTML = '';
+            document.getElementById('sessionsContainer').innerHTML = '';
+            addInstructorRow();
+            addStudentRow();
+            addSessionRow();
+            
+            document.getElementById('systemModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function editSystem(index) {
+            const systems = getSystems();
+            const system = systems[index];
+            if (!system) return;
+
+            currentEditIndex = index;
+            document.getElementById('editIndex').value = index;
+            document.getElementById('modalTitle').textContent = 'Edit Rating System';
+            document.getElementById('saveSystemBtn').innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            
+            // Populate form
+            document.getElementById('systemName').value = system.systemName || '';
+            
+            // Instructors
+            const instructorsContainer = document.getElementById('instructorsContainer');
+            instructorsContainer.innerHTML = '';
+            system.instructors.forEach(inst => {
+                addInstructorRow(inst.name, inst.passCode);
+            });
+            if (system.instructors.length === 0) addInstructorRow();
+            
+            // Students
+            const studentsContainer = document.getElementById('studentsContainer');
+            studentsContainer.innerHTML = '';
+            system.students.forEach(student => {
+                addStudentRow(student.name, student.passCode);
+            });
+            if (system.students.length === 0) addStudentRow();
+            
+            // Sessions
+            const sessionsContainer = document.getElementById('sessionsContainer');
+            sessionsContainer.innerHTML = '';
+            system.sessions.forEach(session => {
+                addSessionRow(session);
+            });
+            if (system.sessions.length === 0) addSessionRow();
+            
+            document.getElementById('systemModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('systemModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ============ DYNAMIC FORM ROWS ============
+        function addInstructorRow(name = '', passCode = '') {
+            const container = document.getElementById('instructorsContainer');
+            if (container.children.length >= 3) {
+                showToast('Maximum 3 instructors allowed', 'warning');
+                return;
+            }
+            
+            const row = document.createElement('div');
+            row.className = 'instructor-row';
+            row.innerHTML = `
+                <input type="text" class="form-control" placeholder="Instructor Name" value="${escapeHtml(name)}" required>
+                <input type="text" class="form-control" placeholder="Pass Code" value="${escapeHtml(passCode)}" required>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        function addStudentRow(name = '', passCode = '') {
+            const container = document.getElementById('studentsContainer');
+            const row = document.createElement('div');
+            row.className = 'instructor-row'; // Reusing same style
+            row.innerHTML = `
+                <input type="text" class="form-control" placeholder="Student Name" value="${escapeHtml(name)}" required>
+                <input type="text" class="form-control" placeholder="Pass Code" value="${escapeHtml(passCode)}" required>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        function addSessionRow(sessionName = '') {
+            const container = document.getElementById('sessionsContainer');
+            const row = document.createElement('div');
+            row.className = 'session-row';
+            row.innerHTML = `
+                <input type="text" class="form-control" placeholder="Session Name" value="${escapeHtml(sessionName)}" required>
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        // ============ FORM SUBMISSION (CREATE/EDIT) ============
+        document.getElementById('systemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const systemName = document.getElementById('systemName').value.trim();
+            if (!systemName) {
+                showToast('System name is required', 'error');
+                return;
+            }
+            
+            // Collect instructors
+            const instructorRows = document.querySelectorAll('#instructorsContainer .instructor-row');
+            const instructors = [];
+            instructorRows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs[0].value.trim() && inputs[1].value.trim()) {
+                    instructors.push({
+                        name: inputs[0].value.trim(),
+                        passCode: inputs[1].value.trim()
+                    });
+                }
+            });
+            
+            if (instructors.length === 0) {
+                showToast('At least one instructor is required', 'error');
+                return;
+            }
+            
+            // Collect students
+            const studentRows = document.querySelectorAll('#studentsContainer .instructor-row');
+            const students = [];
+            studentRows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs[0].value.trim() && inputs[1].value.trim()) {
+                    students.push({
+                        name: inputs[0].value.trim(),
+                        passCode: inputs[1].value.trim()
+                    });
+                }
+            });
+            
+            if (students.length === 0) {
+                showToast('At least one student is required', 'error');
+                return;
+            }
+            
+            // Collect sessions
+            const sessionRows = document.querySelectorAll('#sessionsContainer .session-row');
+            const sessions = [];
+            sessionRows.forEach(row => {
+                const input = row.querySelector('input');
+                if (input.value.trim()) {
+                    sessions.push(input.value.trim());
+                }
+            });
+            
+            if (sessions.length === 0) {
+                showToast('At least one session is required', 'error');
+                return;
+            }
+            
+            const systems = getSystems();
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+            
+            const systemData = {
+                systemName,
+                instructors,
+                students,
+                sessions,
+                createdAt: editIndex === -1 ? new Date().toISOString() : (systems[editIndex]?.createdAt || new Date().toISOString())
+            };
+            
+            if (editIndex === -1) {
+                // Create new
+                systems.push(systemData);
+                saveSystems(systems);
+                showToast('System created successfully');
+            } else {
+                // Update existing
+                systems[editIndex] = systemData;
+                saveSystems(systems);
+                showToast('System updated successfully');
+            }
+            
+            closeModal();
+            loadSystemsFromStorage();
+        });
+
+        // ============ DELETE SYSTEM ============
+        function deleteSystem(index) {
+            if (confirm('Are you sure you want to delete this rating system?')) {
+                const systems = getSystems();
+                systems.splice(index, 1);
+                saveSystems(systems);
+                loadSystemsFromStorage();
+                showToast('System deleted successfully');
+            }
+        }
+
+        // ============ TOAST NOTIFICATION ============
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            if (type === 'success') {
+                toast.style.borderLeftColor = '#2e8b6c';
+                toast.querySelector('i').style.color = '#2e8b6c';
+                toast.querySelector('i').className = 'fas fa-check-circle';
+            } else {
+                toast.style.borderLeftColor = '#b34a4a';
+                toast.querySelector('i').style.color = '#b34a4a';
+                toast.querySelector('i').className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============ EVENT LISTENERS ============
+        function setupEventListeners() {
+            document.getElementById('createSystemBtn').addEventListener('click', openCreateModal);
+            document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+            document.getElementById('addInstructorBtn').addEventListener('click', () => addInstructorRow());
+            document.getElementById('addStudentBtn').addEventListener('click', () => addStudentRow());
+            document.getElementById('addSessionBtn').addEventListener('click', () => addSessionRow());
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', performSearch);
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Escape') clearSearch();
+            });
+            
+            // Close modal when clicking overlay
+            document.getElementById('systemModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        // ============ LOGOUT FUNCTIONS ============
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function confirmLogout() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

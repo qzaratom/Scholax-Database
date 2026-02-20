@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Chart · student view</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- reset – clean ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- UPPER BAR – now shows "Student" instead of admin ----- */
+        .top-bar {
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            color: #1e3d5b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-name {
+            font-weight: 650;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-sub {
+            font-weight: 440;
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #edf2f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.03);
+            letter-spacing: 0.2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* --- changed from admin-badge to student-badge --- */
+        .student-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f4f9fd;
+            padding: 8px 18px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .student-badge i {
+            font-size: 1.2rem;
+            color: #2a6b7a;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: #8a4a4a;
+            font-weight: 550;
+            text-decoration: none;
+            border: 1px solid #f0d6d6;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            cursor: pointer;
+        }
+
+        .logout-btn i {
+            font-size: 1.1rem;
+            color: #b35959;
+        }
+
+        .logout-btn:hover {
+            background: #fdf3f2;
+            border-color: #dcb5b5;
+            color: #6d3b3b;
+            box-shadow: 0 6px 14px rgba(180, 90, 90, 0.08);
+        }
+
+        /* ----- PAGE TITLE BAR – shows CHART now ----- */
+        .page-title-bar {
+            width: 100%;
+            height: 56px;
+            background: #fafcff;
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            flex-shrink: 0;
+        }
+
+        .page-title-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-icon {
+            width: 36px;
+            height: 36px;
+            background: #eaf0f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c6b7c;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-breadcrumb {
+            color: #6b8a9a;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .page-breadcrumb i {
+            margin: 0 6px;
+            font-size: 0.7rem;
+            color: #8aa7b5;
+        }
+
+        /* ----- main flex container (sidebar + empty main) ----- */
+        .app-frame {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ---------- SIDEBAR –– ONLY 3 ICONS: dashboard, rate, chart ---------- */
+        .sidebar {
+            width: 88px;
+            background: #ffffff;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+            gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02);
+            border-right: 1px solid #edf0f5;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            color: #496c7c;
+            text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+            background: #f8fcff;
+            border: 1px solid #e6ecf0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            color: #3e6272;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #eaf1f9;
+            border-color: #b8cfda;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(60, 110, 130, 0.08);
+        }
+
+        .nav-item:hover i {
+            color: #1a4c64;
+        }
+
+        /* ----- TOOLTIP – floating label on hover (modern) ----- */
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 55, 70, 0.95);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 480;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,20,30,0.15);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            z-index: 1000;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 110%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-item:hover::after {
+            opacity: 1;
+            left: 125%;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            left: 115%;
+        }
+
+        .nav-item.active {
+            background: #e1ecf2;
+            border-color: #aac1cc;
+        }
+
+        .nav-item.active i {
+            color: #1c5565;
+        }
+
+        /* ----- empty main – only background, no content (unchanged) ----- */
+        .main-void {
+            flex: 1;
+            background: #f8fbfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-void::after {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: #a5b9ce;
+            border-radius: 50%;
+            opacity: 0.15;
+        }
+
+        /* ---------- PROFESSIONAL LOGOUT CONFIRMATION MODAL (unchanged) ---------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: white;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.2);
+            padding: 32px 28px;
+            transform: scale(0.96) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.12, 0.71, 0.33, 1);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #fff2f0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b44a4a;
+            font-size: 1.8rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+            letter-spacing: -0.01em;
+        }
+
+        .modal-message {
+            font-size: 1.05rem;
+            color: #3f5662;
+            margin: 12px 0 28px 8px;
+            line-height: 1.5;
+            font-weight: 420;
+            padding-left: 4px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 560;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn-cancel {
+            background: #f0f4f7;
+            color: #2c4a5c;
+            border-color: #dae2e8;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e3eaef;
+            border-color: #b3c6d0;
+        }
+
+        .modal-btn-confirm {
+            background: #b94747;
+            color: white;
+            box-shadow: 0 8px 16px rgba(180, 70, 70, 0.16);
+        }
+
+        .modal-btn-confirm:hover {
+            background: #a33a3a;
+            transform: scale(0.98);
+            box-shadow: 0 12px 22px rgba(160, 60, 60, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ███ UPPER BAR – "Student" replaces "Admin" (text + class) -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <!-- changed admin-badge to student-badge and text to "Student" -->
+            <div class="student-badge">
+                <i class="fas fa-user-graduate"></i>  <!-- using graduation icon for student -->
+                <span>Student</span>
+            </div>
+            <!-- LOGOUT BUTTON – triggers modal -->
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ███ PAGE TITLE BAR – now shows CHART (active page) -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon">
+                <i class="fas fa-bar-chart"></i>   <!-- chart icon -->
+            </div>
+            <span class="page-title">Chart</span>
+            <span class="page-breadcrumb">
+                <i class="fas fa-chevron-right"></i> Visual Analytics
+            </span>
+        </div>
+    </div>
+
+    <!-- ███ SIDEBAR (ONLY 3 ICONS with functional hrefs) + CHART ACTIVE -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <!-- Dashboard – links to studentdash.html -->
+                <a href="studentdash.html" class="nav-item" data-tooltip="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <!-- Rate – links to studentrate.html -->
+                <a href="studentrate.html" class="nav-item" data-tooltip="Rate">
+                    <i class="fas fa-star-half-alt"></i>
+                </a>
+                <!-- Chart – active, links to studentchart.html -->
+                <a href="studentchart.html" class="nav-item active" data-tooltip="Chart">
+                    <i class="fas fa-comments"></i>
+                </a>
+            </nav>
+        </aside>
+        <main class="main-void"></main>
+    </div>
+
+    <!-- ███ LOGOUT CONFIRMATION MODAL (confirm redirects to login.html) -->
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="modal-title">Log out</span>
+            </div>
+            <div class="modal-message">
+                Are you sure you want to sign out of your SholarX account?
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmLogout()">Yes, log out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ███ JAVASCRIPT – Modal control; confirmLogout now redirects to login.html -->
+    <script>
+        const modal = document.getElementById('logoutModal');
+
+        function openLogoutModal() {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Confirm logout redirects to login.html as requested
+        function confirmLogout() {
+            window.location.href = "login.html";
+        }
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        });
+
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.classList.contains('active')) {
+                closeLogoutModal();
+            }
+        });
+
+        (function() {
+            'use strict';
+            document.documentElement.setAttribute('data-ui', 'student-chart-page');
+        })();
+    </script>
+</body>
+</html>

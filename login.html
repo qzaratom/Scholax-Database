@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Login</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* background image with white blur overlay (semi‑transparent white + blur) */
+            background: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), 
+                        url('backbg.png') no-repeat center center fixed;
+            background-size: cover;
+            background-color: #d4e6f0; /* fallback */
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            /* slightly smaller form: reduce width from 400px → 360px, adjust padding */
+            width: 360px;
+            max-width: 85%;
+            border-radius: 40px;
+            padding: 24px 28px 32px 28px;   /* reduced top/left/right padding a bit */
+            box-shadow: 0 35px 60px -10px rgba(10, 40, 50, 0.25);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: transform 0.2s ease;
+        }
+
+        .login-card:hover {
+            transform: scale(1.005);
+        }
+
+        .card-title {
+            text-align: center;
+            margin-bottom: 20px;            /* slightly less space */
+            position: relative;
+        }
+
+        .title-main {
+            font-weight: 700;
+            font-size: 1.9rem;               /* reduced from 2.0rem to fit smaller card */
+            letter-spacing: -0.02em;
+            color: #0c3345;
+            background: linear-gradient(135deg, #123d50, #175a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .title-sub {
+            font-weight: 450;
+            font-size: 0.85rem;               /* slightly smaller */
+            color: #34697d;
+            background: rgba(215, 236, 245, 0.7);
+            padding: 4px 14px;                 /* reduced */
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 6px;
+            letter-spacing: 0.2px;
+            border: 0.5px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .title-divider {
+            width: 50px;                        /* shorter to match scale */
+            height: 3px;
+            background: linear-gradient(90deg, #98c0d0, #4d8da5, #98c0d0);
+            border-radius: 6px;
+            margin: 10px auto 8px auto;          /* reduced */
+            opacity: 0.5;
+        }
+
+        .login-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;                           /* reduced */
+            margin-bottom: 18px;                 /* reduced from 24px */
+            color: #1b5565;
+        }
+
+        .login-header i {
+            font-size: 1.2rem;                   /* slightly smaller */
+            color: #377a8f;
+            background: rgba(225, 242, 250, 0.7);
+            padding: 8px;                         /* reduced */
+            border-radius: 50%;
+        }
+
+        .login-header h2 {
+            font-size: 1.3rem;                     /* reduced */
+            font-weight: 580;
+            color: #143e4f;
+            letter-spacing: -0.01em;
+        }
+
+        .login-header h2 span {
+            font-size: 0.8rem;                     /* reduced */
+            font-weight: 400;
+            color: #4c7485;
+            margin-left: 4px;
+        }
+
+        .input-group {
+            margin-bottom: 14px;                   /* reduced from 18px */
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;                     /* reduced */
+            font-weight: 560;
+            color: #204c5c;
+            margin-bottom: 4px;                     /* reduced */
+            letter-spacing: 0.2px;
+        }
+
+        .input-label i {
+            color: #327184;
+            font-size: 0.85rem;                     /* reduced */
+            width: 16px;
+        }
+
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 18px;                      /* reduced from 14px 20px */
+            background: #ffffffd9;
+            border: 1.5px solid #cde0e9;
+            border-radius: 30px;
+            font-size: 0.9rem;                       /* slightly smaller */
+            color: #0b3340;
+            transition: all 0.2s;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .input-field:focus {
+            border-color: #2b7f96;
+            background: #ffffff;
+            box-shadow: 0 8px 18px rgba(45, 120, 140, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: #92b4c4;
+            font-weight: 400;
+            font-size: 0.85rem;                      /* adjusted */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;                              /* moved slightly */
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5f889b;
+            font-size: 1.1rem;                        /* slightly smaller */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #1a576b;
+        }
+
+        .toggle-password:focus {
+            outline: none;
+        }
+
+        .login-action {
+            margin-top: 20px;                           /* reduced from 26px */
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px 18px;                          /* reduced from 14px 20px */
+            background: #247c8e;
+            border: none;
+            border-radius: 40px;
+            font-weight: 620;
+            font-size: 0.95rem;                          /* slightly smaller */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 12px 24px -6px rgba(25, 95, 115, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .login-btn i {
+            font-size: 1rem;                             /* smaller */
+        }
+
+        .login-btn:hover {
+            background: #1b697c;
+            transform: scale(0.99);
+            box-shadow: 0 16px 28px -6px rgba(15, 80, 100, 0.35);
+        }
+
+        .login-footer {
+            margin-top: 18px;                              /* reduced from 24px */
+            display: flex;
+            justify-content: center;
+            color: #376376;
+            font-size: 0.8rem;                             /* smaller */
+            border-top: 1px dashed #b9d3e0;
+            padding-top: 14px;                              /* reduced */
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .login-footer i {
+            color: #317185;
+        }
+
+        .login-footer a {
+            color: #1f6277;
+            text-decoration: none;
+            font-weight: 560;
+            border-bottom: 1px dotted #89b6c9;
+        }
+
+        .login-footer a:hover {
+            color: #0b3f50;
+        }
+
+        .error-message {
+            color: #b34a4a;
+            font-size: 0.8rem;                              /* smaller */
+            margin-top: 6px;
+            text-align: center;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="card-title">
+            <span class="title-main">SholarX</span>
+            <div class="title-divider"></div>
+            <span class="title-sub">Rating & Feedback System</span>
+        </div>
+
+        <div class="login-header">
+            <i class="fas fa-lock-open"></i>
+            <h2>welcome <span>· login</span></h2>
+        </div>
+
+        <div class="input-group">
+            <div class="input-label">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+            </div>
+            <input type="email" id="emailInput" class="input-field" placeholder="your.email@example.com">
+        </div>
+
+        <div class="input-group">
+            <div class="input-label">
+                <i class="fas fa-lock"></i>
+                <span>Password</span>
+            </div>
+            <div class="password-wrapper">
+                <input type="password" id="passwordInput" class="input-field" placeholder="··········">
+                <button type="button" id="togglePasswordBtn" class="toggle-password" onclick="togglePasswordVisibility()">
+                    <i id="passwordEyeIcon" class="far fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <div class="login-action">
+            <button class="login-btn" onclick="handleLogin()">
+                <i class="fas fa-arrow-right-to-bracket"></i> log in
+            </button>
+        </div>
+
+        <div class="login-footer">
+            <i class="fas fa-shield-alt"></i> <a href="#">recover account</a>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('passwordEyeIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Get systems from localStorage
+        function getSystems() {
+            const systems = localStorage.getItem('ratingsystems');
+            return systems ? JSON.parse(systems) : [];
+        }
+
+        // Handle login logic
+        function handleLogin() {
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            const errorElement = document.getElementById('errorMessage');
+            
+            // Clear previous error
+            errorElement.textContent = '';
+
+            // Validate inputs
+            if (!email || !password) {
+                errorElement.textContent = 'Please enter both email and password';
+                return;
+            }
+
+            // Check for admin login
+            if (email === 'admin@gmail.com' && password === 'admin') {
+                window.location.href = 'admindash.html';
+                return;
+            }
+
+            // Check for student login
+            if (email === 'student@gmail.com' && password === 'student') {
+                window.location.href = 'studentdash.html';
+                return;
+            }
+
+            // Check for instructor login (using pass code from systems)
+            const systems = getSystems();
+            
+            // Search through all systems to find an instructor with matching pass code
+            for (const system of systems) {
+                // Check each instructor in the system
+                for (const instructor of system.instructors) {
+                    if (instructor.passCode === password) {
+                        // For instructor login, email should be instructor@gmail.com
+                        if (email === 'instructor@gmail.com') {
+                            // Store the system info for the instructor dashboard
+                            const instructorData = {
+                                systemName: system.systemName,
+                                instructorName: instructor.name,
+                                passCode: instructor.passCode,
+                                systemData: system
+                            };
+                            localStorage.setItem('currentInstructor', JSON.stringify(instructorData));
+                            window.location.href = 'instructordash.html';
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // If we get here, login failed
+            errorElement.textContent = 'Invalid email or password';
+        }
+
+        // Check for Enter key press
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>

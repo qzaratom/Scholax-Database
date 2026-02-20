@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Dashboard · Student Overview</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ----- reset – clean ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- UPPER BAR – shows "Student" ----- */
+        .top-bar {
+            width: 100%;
+            height: 70px;
+            background: #ffffff;
+            color: #1e3d5b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-name {
+            font-weight: 650;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-sub {
+            font-weight: 440;
+            font-size: 0.95rem;
+            color: #4f6f7f;
+            background: #edf2f7;
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.03);
+            letter-spacing: 0.2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .student-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f4f9fd;
+            padding: 8px 18px;
+            border-radius: 100px;
+            border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e;
+            font-weight: 500;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .student-badge i {
+            font-size: 1.2rem;
+            color: #2a6b7a;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 22px;
+            border-radius: 100px;
+            color: #8a4a4a;
+            font-weight: 550;
+            text-decoration: none;
+            border: 1px solid #f0d6d6;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            cursor: pointer;
+        }
+
+        .logout-btn i {
+            font-size: 1.1rem;
+            color: #b35959;
+        }
+
+        .logout-btn:hover {
+            background: #fdf3f2;
+            border-color: #dcb5b5;
+            color: #6d3b3b;
+            box-shadow: 0 6px 14px rgba(180, 90, 90, 0.08);
+        }
+
+        /* ----- PAGE TITLE BAR – shows DASHBOARD ----- */
+        .page-title-bar {
+            width: 100%;
+            height: 56px;
+            background: #fafcff;
+            border-bottom: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            flex-shrink: 0;
+        }
+
+        .page-title-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-icon {
+            width: 36px;
+            height: 36px;
+            background: #eaf0f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c6b7c;
+            font-size: 1.2rem;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #1a3b4a;
+            letter-spacing: -0.01em;
+        }
+
+        .page-breadcrumb {
+            color: #6b8a9a;
+            font-size: 0.9rem;
+            margin-left: 8px;
+            font-weight: 400;
+        }
+
+        .page-breadcrumb i {
+            margin: 0 6px;
+            font-size: 0.7rem;
+            color: #8aa7b5;
+        }
+
+        /* ----- main flex container (sidebar + main content) ----- */
+        .app-frame {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ---------- SIDEBAR –– ONLY 3 ICONS: dashboard, rate, chart ---------- */
+        .sidebar {
+            width: 88px;
+            background: #ffffff;
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 0;
+            gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02);
+            border-right: 1px solid #edf0f5;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            color: #496c7c;
+            text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
+            background: #f8fcff;
+            border: 1px solid #e6ecf0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .nav-item i {
+            font-size: 1.6rem;
+            color: #3e6272;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #eaf1f9;
+            border-color: #b8cfda;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(60, 110, 130, 0.08);
+        }
+
+        .nav-item:hover i {
+            color: #1a4c64;
+        }
+
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(28, 55, 70, 0.95);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 480;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px rgba(0,20,30,0.15);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            z-index: 1000;
+            border: 0.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: 110%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent;
+            opacity: 0;
+            transition: opacity 0.18s, left 0.18s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-item:hover::after {
+            opacity: 1;
+            left: 125%;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            left: 115%;
+        }
+
+        .nav-item.active {
+            background: #e1ecf2;
+            border-color: #aac1cc;
+        }
+
+        .nav-item.active i {
+            color: #1c5565;
+        }
+
+        /* ----- MAIN CONTENT AREA (scrollable) ----- */
+        .main-content {
+            flex: 1;
+            background: #f8fbfe;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ----- WELCOME SECTION ----- */
+        .welcome-section {
+            background: linear-gradient(135deg, #e1ecf4, #d4e4ed);
+            border-radius: 24px;
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+        }
+
+        .welcome-text h2 {
+            font-size: 1.8rem;
+            font-weight: 650;
+            color: #1a3b4a;
+            margin-bottom: 8px;
+        }
+
+        .welcome-text p {
+            color: #2f5b6e;
+            font-size: 1.1rem;
+        }
+
+        .date-display {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 100px;
+            color: #1e5568;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .date-display i {
+            margin-right: 8px;
+            color: #4682a0;
+        }
+
+        /* ----- STATS CARDS ----- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 16px 28px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            background: #eaf1f7;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 2rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4f6f7f;
+            margin-bottom: 6px;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a3b4a;
+            line-height: 1.2;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            color: #6e8b9b;
+            margin-top: 4px;
+        }
+
+        /* ----- PROGRESS SECTION ----- */
+        .progress-section {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h3 {
+            font-size: 1.3rem;
+            font-weight: 650;
+            color: #1a3b4a;
+        }
+
+        .view-all-link {
+            color: #1e5f7a;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-all-link:hover {
+            color: #0e3a4f;
+        }
+
+        /* ----- COURSE PROGRESS CARDS ----- */
+        .course-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .course-progress-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px;
+            background: #f8fcff;
+            border-radius: 18px;
+            border: 1px solid #e6ecf0;
+            transition: all 0.2s ease;
+        }
+
+        .course-progress-item:hover {
+            background: #f0f7fc;
+        }
+
+        .course-info {
+            flex: 2;
+        }
+
+        .course-name {
+            font-weight: 650;
+            color: #1f4b5c;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .course-instructor {
+            font-size: 0.9rem;
+            color: #4f6f7f;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .course-instructor i {
+            color: #4682a0;
+            font-size: 0.85rem;
+        }
+
+        .progress-bar-container {
+            flex: 3;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .progress-label {
+            color: #4f6f7f;
+        }
+
+        .progress-value {
+            font-weight: 600;
+            color: #1a4c64;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #e2eaf0;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4682a0, #1e5f7a);
+            border-radius: 100px;
+            transition: width 0.3s ease;
+        }
+
+        .course-stats {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+        }
+
+        .course-stat {
+            text-align: center;
+        }
+
+        .course-stat-number {
+            font-weight: 700;
+            color: #1a4c64;
+            font-size: 1.2rem;
+        }
+
+        .course-stat-label {
+            font-size: 0.8rem;
+            color: #6e8b9b;
+        }
+
+        .course-action {
+            flex: 0.5;
+            text-align: right;
+        }
+
+        .rate-now-btn {
+            background: #1a4c64;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .rate-now-btn:hover {
+            background: #0e3a4f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(26, 76, 100, 0.2);
+        }
+
+        .rate-now-btn.completed {
+            background: #2e8b6c;
+            cursor: default;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* ----- NEXT SESSIONS SECTION ----- */
+        .next-sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .session-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e6ecf0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .session-card:hover {
+            box-shadow: 0 12px 24px rgba(0,0,0,0.04);
+        }
+
+        .session-date {
+            width: 60px;
+            height: 60px;
+            background: #eaf1f7;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+        }
+
+        .session-date .day {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .session-date .month {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .session-details {
+            flex: 1;
+        }
+
+        .session-course {
+            font-weight: 650;
+            color: #1f4b5c;
+            margin-bottom: 4px;
+        }
+
+        .session-name {
+            font-size: 0.9rem;
+            color: #4f6f7f;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .session-instructor {
+            font-size: 0.85rem;
+            color: #6e8b9b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .session-status-badge {
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: #ecf3f7;
+            color: #1e5568;
+        }
+
+        .session-status-badge.pending {
+            background: #fff3d4;
+            color: #b27d2e;
+        }
+
+        .session-status-badge.completed {
+            background: #e3f2ed;
+            color: #2e8b6c;
+        }
+
+        /* ----- RECENT FEEDBACK SECTION ----- */
+        .recent-feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .feedback-item {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #e6ecf0;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .feedback-avatar {
+            width: 48px;
+            height: 48px;
+            background: #e2ecf2;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e5f7a;
+            font-size: 1.3rem;
+        }
+
+        .feedback-content {
+            flex: 1;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .feedback-course {
+            font-weight: 650;
+            color: #1f4b5c;
+        }
+
+        .feedback-date {
+            font-size: 0.85rem;
+            color: #6e8b9b;
+        }
+
+        .feedback-text {
+            color: #2c4a5c;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .feedback-rating {
+            display: flex;
+            gap: 4px;
+            color: #fbbf24;
+        }
+
+        .feedback-rating i {
+            font-size: 0.9rem;
+        }
+
+        /* ----- CHARTS SECTION ----- */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #edf2f7;
+        }
+
+        .chart-title {
+            font-weight: 650;
+            color: #1a3b4a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rating-distribution {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rating-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rating-label {
+            width: 60px;
+            color: #4f6f7f;
+        }
+
+        .rating-bar-bg {
+            flex: 1;
+            height: 8px;
+            background: #e2eaf0;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4682a0, #1e5f7a);
+            border-radius: 100px;
+        }
+
+        .rating-count {
+            width: 40px;
+            text-align: right;
+            color: #1a4c64;
+            font-weight: 500;
+        }
+
+        .top-instructors {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .instructor-rank-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rank-number {
+            width: 28px;
+            height: 28px;
+            background: #eaf1f7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #1e5f7a;
+        }
+
+        .instructor-info {
+            flex: 1;
+        }
+
+        .instructor-name {
+            font-weight: 600;
+            color: #1f4b5c;
+        }
+
+        .instructor-course {
+            font-size: 0.8rem;
+            color: #6e8b9b;
+        }
+
+        .instructor-points {
+            font-weight: 700;
+            color: #1a4c64;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background: white;
+            border-radius: 24px;
+            border: 1px dashed #cbd5e0;
+            color: #5f7d8c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #a0c0ce;
+        }
+
+        .empty-state h3 {
+            font-weight: 500;
+            color: #365f6e;
+        }
+
+        /* ----- TOAST NOTIFICATION ----- */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 28px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 100px;
+            box-shadow: 0 16px 32px rgba(0,20,30,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #1a485c;
+            border-left: 6px solid #2e8b6c;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+            z-index: 10001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            color: #2e8b6c;
+            font-size: 1.2rem;
+        }
+
+        /* ----- LOGOUT MODAL ----- */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 25, 35, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+
+        .logout-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .logout-modal-card {
+            background: white;
+            width: 400px;
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 20, 30, 0.2);
+            padding: 32px 28px;
+        }
+
+        .modal-header-compact {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon-compact {
+            width: 56px;
+            height: 56px;
+            background: #fff2f0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b44a4a;
+            font-size: 1.8rem;
+        }
+
+        .modal-title-compact {
+            font-size: 1.5rem;
+            font-weight: 620;
+            color: #1a2e3b;
+        }
+
+        .modal-message {
+            font-size: 1.05rem;
+            color: #3f5662;
+            margin: 12px 0 28px 8px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 560;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .modal-btn-secondary {
+            background: #f0f4f7;
+            color: #2c4a5c;
+            border-color: #dae2e8;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e3eaef;
+        }
+
+        .modal-btn-danger {
+            background: #b94747;
+            color: white;
+        }
+
+        .modal-btn-danger:hover {
+            background: #a33a3a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ███ UPPER BAR – Student View -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <div class="student-badge">
+                <i class="fas fa-user-graduate"></i>
+                <span>Student</span>
+            </div>
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- ███ PAGE TITLE BAR – Dashboard -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <span class="page-title">Dashboard</span>
+            <span class="page-breadcrumb">
+                <i class="fas fa-chevron-right"></i> Your Rating Overview
+            </span>
+        </div>
+    </div>
+
+    <!-- ███ SIDEBAR + MAIN CONTENT -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="studentdash.html" class="nav-item active" data-tooltip="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                </a>
+                <a href="studentrate.html" class="nav-item" data-tooltip="Rate">
+                    <i class="fas fa-star-half-alt"></i>
+                </a>
+                <a href="studentchart.html" class="nav-item" data-tooltip="Chart">
+                    <i class="fas fa-comments"></i>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT – Dashboard Overview -->
+        <main class="main-content">
+            <!-- Welcome Section with Date -->
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h2>Your Rating Dashboard</h2>
+                    <p>Track your progress and see how your feedback makes an impact</p>
+                </div>
+                <div class="date-display" id="currentDate">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Loading date...</span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Courses</h3>
+                        <div class="stat-number" id="totalCourses">0</div>
+                        <div class="stat-sub">Enrolled courses</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Pending Ratings</h3>
+                        <div class="stat-number" id="pendingRatings">0</div>
+                        <div class="stat-sub">Sessions to rate</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Completed Ratings</h3>
+                        <div class="stat-number" id="completedRatings">0</div>
+                        <div class="stat-sub">Sessions rated</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Stars Given</h3>
+                        <div class="stat-number" id="totalStars">0</div>
+                        <div class="stat-sub">Points contributed</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Progress Section -->
+            <div class="progress-section">
+                <div class="section-header">
+                    <h3>Your Course Progress</h3>
+                    <a href="studentrate.html" class="view-all-link">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div id="courseProgressList" class="course-progress-list">
+                    <!-- Course progress items will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Next Sessions to Rate -->
+            <div class="progress-section">
+                <div class="section-header">
+                    <h3>Next Sessions to Rate</h3>
+                    <span class="view-all-link" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </span>
+                </div>
+                <div id="nextSessionsGrid" class="next-sessions-grid">
+                    <!-- Next sessions will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Recent Feedback & Charts Row -->
+            <div class="charts-grid">
+                <!-- Recent Feedback -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fas fa-history"></i>
+                        Recent Feedback
+                    </div>
+                    <div id="recentFeedbackList" class="recent-feedback-list">
+                        <!-- Recent feedback items will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Rating Distribution -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Your Rating Distribution
+                    </div>
+                    <div id="ratingDistribution" class="rating-distribution">
+                        <!-- Rating distribution will be dynamically loaded here -->
+                    </div>
+                </div>
+
+                <!-- Top Rated Instructors -->
+                <div class="chart-card">
+                    <div class="chart-title">
+                        <i class="fas fa-trophy"></i>
+                        Your Top Rated Instructors
+                    </div>
+                    <div id="topInstructors" class="top-instructors">
+                        <!-- Top instructors will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ███ TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Dashboard updated</span>
+    </div>
+
+    <!-- ███ LOGOUT CONFIRMATION MODAL -->
+    <div id="logoutModal" class="logout-modal-overlay">
+        <div class="logout-modal-card">
+            <div class="modal-header-compact">
+                <div class="modal-icon-compact">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="modal-title-compact">Log out</span>
+            </div>
+            <div class="modal-message">
+                Are you sure you want to sign out of your SholarX account?
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">Cancel</button>
+                <button class="modal-btn modal-btn-danger" onclick="confirmLogout()">Yes, log out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONSTANTS & GLOBAL STATE ============
+        const RATINGS_STORAGE_KEY = 'ratingsystems';
+        const INSTRUCTOR_RATES_KEY = 'instructorrates';
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            setCurrentDate();
+            
+            // Refresh dashboard every 30 seconds
+            setInterval(updateDashboard, 30000);
+        });
+
+        // ============ LOCAL STORAGE FUNCTIONS ============
+        function getRatingSystems() {
+            const systems = localStorage.getItem(RATINGS_STORAGE_KEY);
+            return systems ? JSON.parse(systems) : [];
+        }
+
+        function getInstructorRates() {
+            const rates = localStorage.getItem(INSTRUCTOR_RATES_KEY);
+            return rates ? JSON.parse(rates) : [];
+        }
+
+        // ============ DASHBOARD UPDATE ============
+        function updateDashboard() {
+            const courses = getRatingSystems();
+            const rates = getInstructorRates();
+            
+            updateStats(courses, rates);
+            updateCourseProgress(courses, rates);
+            updateNextSessions(courses, rates);
+            updateRecentFeedback(rates);
+            updateRatingDistribution(rates);
+            updateTopInstructors(rates);
+        }
+
+        function refreshDashboard() {
+            updateDashboard();
+            showToast('Dashboard refreshed');
+        }
+
+        // ============ STATS CARDS ============
+        function updateStats(courses, rates) {
+            // Total Courses
+            document.getElementById('totalCourses').textContent = courses.length;
+            
+            // Calculate pending and completed ratings
+            let totalSessions = 0;
+            let completedCount = 0;
+            let totalStars = 0;
+            
+            courses.forEach(course => {
+                if (course.sessions) {
+                    totalSessions += course.sessions.length;
+                    
+                    // Check each session if rated
+                    course.sessions.forEach((session, sessionIndex) => {
+                        const instructorName = course.instructors.map(inst => inst.name).join(', ');
+                        const isRated = rates.some(r => 
+                            r.instructorName === instructorName && 
+                            r.systemName === course.systemName &&
+                            r.feedbacks?.some(f => f.sessionIndex === sessionIndex)
+                        );
+                        
+                        if (isRated) {
+                            completedCount++;
+                        }
+                    });
+                }
+            });
+            
+            // Calculate total stars given
+            rates.forEach(rate => {
+                if (rate.feedbacks) {
+                    rate.feedbacks.forEach(feedback => {
+                        totalStars += feedback.rating;
+                    });
+                }
+            });
+            
+            document.getElementById('pendingRatings').textContent = totalSessions - completedCount;
+            document.getElementById('completedRatings').textContent = completedCount;
+            document.getElementById('totalStars').textContent = totalStars;
+        }
+
+        // ============ COURSE PROGRESS ============
+        function updateCourseProgress(courses, rates) {
+            const container = document.getElementById('courseProgressList');
+            
+            if (courses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>No Courses Yet</h3>
+                        <p>You don't have any courses to rate at the moment</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = courses.map(course => {
+                const totalSessions = course.sessions?.length || 0;
+                const instructorName = course.instructors.map(inst => inst.name).join(', ');
+                
+                // Count completed ratings for this course
+                let completedSessions = 0;
+                if (course.sessions) {
+                    course.sessions.forEach((session, sessionIndex) => {
+                        const isRated = rates.some(r => 
+                            r.instructorName === instructorName && 
+                            r.systemName === course.systemName &&
+                            r.feedbacks?.some(f => f.sessionIndex === sessionIndex)
+                        );
+                        if (isRated) completedSessions++;
+                    });
+                }
+                
+                const progressPercent = totalSessions > 0 ? (completedSessions / totalSessions) * 100 : 0;
+                const isComplete = completedSessions === totalSessions && totalSessions > 0;
+                
+                return `
+                    <div class="course-progress-item">
+                        <div class="course-info">
+                            <div class="course-name">${escapeHtml(course.systemName)}</div>
+                            <div class="course-instructor">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                ${escapeHtml(instructorName)}
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-header">
+                                <span class="progress-label">Progress</span>
+                                <span class="progress-value">${completedSessions}/${totalSessions} sessions</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                        <div class="course-stats">
+                            <div class="course-stat">
+                                <div class="course-stat-number">${completedSessions}</div>
+                                <div class="course-stat-label">Rated</div>
+                            </div>
+                            <div class="course-stat">
+                                <div class="course-stat-number">${totalSessions - completedSessions}</div>
+                                <div class="course-stat-label">Left</div>
+                            </div>
+                        </div>
+                        <div class="course-action">
+                            <a href="studentrate.html" class="rate-now-btn ${isComplete ? 'completed' : ''}">
+                                ${isComplete ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-star"></i> Rate Now'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ NEXT SESSIONS TO RATE ============
+        function updateNextSessions(courses, rates) {
+            const container = document.getElementById('nextSessionsGrid');
+            
+            // Collect all unrated sessions
+            const unratedSessions = [];
+            
+            courses.forEach(course => {
+                if (course.sessions) {
+                    const instructorName = course.instructors.map(inst => inst.name).join(', ');
+                    
+                    course.sessions.forEach((session, sessionIndex) => {
+                        const isRated = rates.some(r => 
+                            r.instructorName === instructorName && 
+                            r.systemName === course.systemName &&
+                            r.feedbacks?.some(f => f.sessionIndex === sessionIndex)
+                        );
+                        
+                        if (!isRated) {
+                            unratedSessions.push({
+                                courseName: course.systemName,
+                                sessionName: session,
+                                instructorName: instructorName,
+                                sessionIndex: sessionIndex
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Take first 3 unrated sessions
+            const nextSessions = unratedSessions.slice(0, 3);
+            
+            if (nextSessions.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6e8b9b;">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 12px; color: #2e8b6c;"></i>
+                        <h3>All Caught Up!</h3>
+                        <p>You've rated all available sessions</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = nextSessions.map((session, index) => {
+                // Generate random future dates for demo
+                const days = index + 2;
+                const date = new Date();
+                date.setDate(date.getDate() + days);
+                const day = date.getDate();
+                const month = date.toLocaleString('default', { month: 'short' });
+                
+                return `
+                    <div class="session-card">
+                        <div class="session-date">
+                            <span class="day">${day}</span>
+                            <span class="month">${month}</span>
+                        </div>
+                        <div class="session-details">
+                            <div class="session-course">${escapeHtml(session.courseName)}</div>
+                            <div class="session-name">
+                                <i class="fas fa-calendar-check"></i>
+                                ${escapeHtml(session.sessionName)}
+                            </div>
+                            <div class="session-instructor">
+                                <i class="fas fa-user-tie"></i>
+                                ${escapeHtml(session.instructorName)}
+                            </div>
+                        </div>
+                        <div class="session-status-badge pending">Pending</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ RECENT FEEDBACK ============
+        function updateRecentFeedback(rates) {
+            const container = document.getElementById('recentFeedbackList');
+            
+            // Collect all feedbacks with timestamps
+            const allFeedbacks = [];
+            
+            rates.forEach(rate => {
+                if (rate.feedbacks) {
+                    rate.feedbacks.forEach(feedback => {
+                        allFeedbacks.push({
+                            instructorName: rate.instructorName,
+                            systemName: rate.systemName,
+                            feedback: feedback.feedback,
+                            rating: feedback.rating,
+                            timestamp: feedback.timestamp
+                        });
+                    });
+                }
+            });
+            
+            // Sort by timestamp (most recent first)
+            allFeedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Take first 3
+            const recentFeedbacks = allFeedbacks.slice(0, 3);
+            
+            if (recentFeedbacks.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #6e8b9b;">
+                        <i class="fas fa-comment-slash" style="font-size: 2rem; margin-bottom: 12px;"></i>
+                        <p>No feedback yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentFeedbacks.map(fb => {
+                // Format date
+                const date = new Date(fb.timestamp);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="feedback-item">
+                        <div class="feedback-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="feedback-content">
+                            <div class="feedback-header">
+                                <span class="feedback-course">${escapeHtml(fb.systemName)}</span>
+                                <span class="feedback-date">${formattedDate}</span>
+                            </div>
+                            <div class="feedback-text">"${escapeHtml(fb.feedback)}"</div>
+                            <div class="feedback-rating">
+                                ${generateStarDisplay(fb.rating)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ RATING DISTRIBUTION ============
+        function updateRatingDistribution(rates) {
+            const container = document.getElementById('ratingDistribution');
+            
+            // Count ratings by star value
+            const distribution = {1:0, 2:0, 3:0, 4:0, 5:0};
+            let totalRatings = 0;
+            
+            rates.forEach(rate => {
+                if (rate.feedbacks) {
+                    rate.feedbacks.forEach(feedback => {
+                        distribution[feedback.rating]++;
+                        totalRatings++;
+                    });
+                }
+            });
+            
+            if (totalRatings === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6e8b9b;">
+                        <p>No ratings yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = [5,4,3,2,1].map(stars => {
+                const count = distribution[stars];
+                const percentage = totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+                
+                return `
+                    <div class="rating-bar-item">
+                        <span class="rating-label">${stars} star${stars > 1 ? 's' : ''}</span>
+                        <div class="rating-bar-bg">
+                            <div class="rating-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <span class="rating-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ TOP INSTRUCTORS ============
+        function updateTopInstructors(rates) {
+            const container = document.getElementById('topInstructors');
+            
+            if (rates.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #6e8b9b;">
+                        <p>No instructors rated yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by total points (descending) and take top 3
+            const topInstructors = [...rates]
+                .sort((a, b) => b.totalPoints - a.totalPoints)
+                .slice(0, 3);
+
+            container.innerHTML = topInstructors.map((instructor, index) => {
+                const medals = ['🥇', '🥈', '🥉'];
+                
+                return `
+                    <div class="instructor-rank-item">
+                        <div class="rank-number">${medals[index] || (index + 1)}</div>
+                        <div class="instructor-info">
+                            <div class="instructor-name">${escapeHtml(instructor.instructorName)}</div>
+                            <div class="instructor-course">${escapeHtml(instructor.systemName)}</div>
+                        </div>
+                        <div class="instructor-points">${instructor.totalPoints} pts</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ HELPER FUNCTIONS ============
+        function setCurrentDate() {
+            const dateElement = document.getElementById('currentDate').querySelector('span');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('en-US', options);
+            dateElement.textContent = today;
+        }
+
+        function generateStarDisplay(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============ TOAST NOTIFICATION ============
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            if (type === 'success') {
+                toast.style.borderLeftColor = '#2e8b6c';
+                toast.querySelector('i').style.color = '#2e8b6c';
+                toast.querySelector('i').className = 'fas fa-check-circle';
+            } else {
+                toast.style.borderLeftColor = '#b34a4a';
+                toast.querySelector('i').style.color = '#b34a4a';
+                toast.querySelector('i').className = 'fas fa-exclamation-circle';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============ LOGOUT FUNCTIONS ============
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function confirmLogout() {
+            window.location.href = 'login.html';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const logoutModal = document.getElementById('logoutModal');
+            if (event.target === logoutModal) {
+                closeLogoutModal();
+            }
+        });
+
+        // ESC key to close modals
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const logoutModal = document.getElementById('logoutModal');
+                if (logoutModal.classList.contains('active')) {
+                    closeLogoutModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

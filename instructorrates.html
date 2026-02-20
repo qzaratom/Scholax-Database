@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SholarX · Instructor · Rating Systems Access</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f5f7fb;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* ----- UPPER BAR – Instructor ----- */
+        .top-bar {
+            width: 100%; height: 70px; background: #ffffff; color: #1e3d5b;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0,0,0,0.03); flex-shrink: 0; z-index: 10;
+        }
+        .app-title { display: flex; align-items: center; gap: 12px; }
+        .app-name {
+            font-weight: 650; font-size: 1.6rem; letter-spacing: -0.02em; color: #0a2e40;
+            background: linear-gradient(145deg, #0a3144, #1a485c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .app-sub {
+            font-weight: 440; font-size: 0.95rem; color: #4f6f7f; background: #edf2f7;
+            padding: 6px 16px; border-radius: 100px; border: 0.5px solid rgba(0,0,0,0.03);
+        }
+        .user-actions { display: flex; align-items: center; gap: 20px; }
+        .instructor-badge {
+            display: flex; align-items: center; gap: 10px; background: #f4f9fd;
+            padding: 8px 18px; border-radius: 100px; border: 0.5px solid rgba(0,0,0,0.02);
+            color: #1c4c5e; font-weight: 500; font-size: 0.95rem;
+        }
+        .instructor-badge i { font-size: 1.2rem; color: #2a6b7a; }
+        .logout-btn {
+            display: flex; align-items: center; gap: 10px; background: white;
+            padding: 8px 22px; border-radius: 100px; color: #8a4a4a; font-weight: 550;
+            text-decoration: none; border: 1px solid #f0d6d6; transition: all 0.2s ease;
+            font-size: 0.95rem; cursor: pointer;
+        }
+        .logout-btn i { font-size: 1.1rem; color: #b35959; }
+        .logout-btn:hover { background: #fdf3f2; border-color: #dcb5b5; color: #6d3b3b; }
+
+        /* ----- PAGE TITLE BAR ----- */
+        .page-title-bar {
+            width: 100%; height: 56px; background: #fafcff; border-bottom: 1px solid #e6ecf0;
+            display: flex; align-items: center; padding: 0 28px; flex-shrink: 0;
+        }
+        .page-title-content { display: flex; align-items: center; gap: 12px; }
+        .page-icon {
+            width: 36px; height: 36px; background: #eaf0f5; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #2c6b7c; font-size: 1.2rem;
+        }
+        .page-title { font-size: 1.35rem; font-weight: 600; color: #1a3b4a; letter-spacing: -0.01em; }
+        .page-breadcrumb { color: #6b8a9a; font-size: 0.9rem; margin-left: 8px; font-weight: 400; }
+        .page-breadcrumb i { margin: 0 6px; font-size: 0.7rem; color: #8aa7b5; }
+
+        /* ----- main flex container (sidebar + main) ----- */
+        .app-frame { display: flex; flex: 1; overflow: hidden; }
+
+        /* ---------- SIDEBAR –– ICONS: Dashboard, Ratings, Charts ---------- */
+        .sidebar {
+            width: 88px; background: #ffffff; color: #2c3e50;
+            display: flex; flex-direction: column; align-items: center; padding: 32px 0; gap: 24px;
+            box-shadow: 2px 0 16px rgba(0,0,0,0.02); border-right: 1px solid #edf0f5; flex-shrink: 0;
+        }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 22px; width: 100%; align-items: center; }
+        .nav-item {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 56px; height: 56px; border-radius: 18px; color: #496c7c; text-decoration: none;
+            transition: all 0.18s cubic-bezier(0.2, 0, 0, 1); background: #f8fcff;
+            border: 1px solid #e6ecf0; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .nav-item i { font-size: 1.6rem; color: #3e6272; transition: color 0.2s; }
+        .nav-item:hover { background: #eaf1f9; border-color: #b8cfda; transform: translateY(-2px); }
+        .nav-item:hover i { color: #1a4c64; }
+        .nav-item::after {
+            content: attr(data-tooltip); position: absolute; left: 120%; top: 50%;
+            transform: translateY(-50%); background: rgba(28, 55, 70, 0.95); color: white;
+            padding: 8px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 480;
+            white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.18s, left 0.18s;
+            z-index: 1000; backdrop-filter: blur(4px);
+        }
+        .nav-item::before { content: ""; position: absolute; left: 110%; top: 50%; transform: translateY(-50%); border-width: 6px; border-style: solid; border-color: transparent rgba(28, 55, 70, 0.95) transparent transparent; opacity: 0; transition: opacity 0.18s, left 0.18s; pointer-events: none; }
+        .nav-item:hover::after { opacity: 1; left: 125%; }
+        .nav-item:hover::before { opacity: 1; left: 115%; }
+        .nav-item.active { background: #e1ecf2; border-color: #aac1cc; }
+        .nav-item.active i { color: #1c5565; }
+
+        /* ----- MAIN CONTENT – Systems Grid & Access ----- */
+        .main-content {
+            flex: 1; background: #f8fbfe; padding: 32px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 32px;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #e1ecf4, #d4e4ed); border-radius: 24px;
+            padding: 28px 32px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .welcome-text h2 { font-size: 1.8rem; font-weight: 650; color: #1a3b4a; margin-bottom: 8px; }
+        .welcome-text p { color: #2f5b6e; font-size: 1.1rem; }
+        .instructor-stats { display: flex; gap: 40px; background: rgba(255,255,255,0.5); padding: 16px 28px; border-radius: 60px; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #1a4c64; line-height: 1.2; }
+        .stat-label { font-size: 0.9rem; color: #3e6f82; font-weight: 500; }
+
+        /* ----- Systems Grid ----- */
+        .systems-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px;
+        }
+        .system-card {
+            background: white; border-radius: 24px; padding: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7; transition: all 0.2s; display: flex; flex-direction: column; gap: 16px;
+        }
+        .system-card:hover { box-shadow: 0 16px 28px rgba(0,0,0,0.06); transform: translateY(-2px); border-color: #d0dfe8; }
+        .system-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .system-title { font-size: 1.3rem; font-weight: 650; color: #1a3b4a; }
+        .system-badge { background: #e1ecf2; padding: 6px 14px; border-radius: 100px; font-size: 0.85rem; color: #1e5568; font-weight: 500; }
+        .system-summary { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid #ecf1f5; }
+        .summary-item { display: flex; align-items: center; gap: 12px; color: #2e5a6b; font-size: 0.95rem; }
+        .summary-icon { width: 28px; color: #568296; text-align: center; }
+
+        .access-section { margin-top: 8px; display: flex; flex-direction: column; gap: 12px; }
+        .passcode-input-group {
+            display: flex; gap: 8px; align-items: center;
+            background: #f4f9fd; border: 1px solid #dde5eb; border-radius: 60px; padding: 4px 4px 4px 18px;
+        }
+        .passcode-input-group input {
+            flex: 1; border: none; background: transparent; padding: 10px 0; font-size: 1rem;
+            outline: none; color: #1f4b5c;
+        }
+        .passcode-input-group button {
+            background: #1a4c64; border: none; color: white; padding: 10px 22px; border-radius: 60px;
+            font-weight: 500; cursor: pointer; transition: all 0.15s;
+        }
+        .passcode-input-group button:hover { background: #0e3a4f; }
+
+        /* ----- MODAL: Course Sessions (Lock/Unlock) with Instructor Name & Points ----- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(10, 25, 35, 0.6); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10000; opacity: 0; visibility: hidden; transition: 0.25s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-card {
+            background: white; width: 850px;  /* increased width for better readability */
+            max-width: 95%; max-height: 90vh; overflow-y: auto;
+            border-radius: 28px; box-shadow: 0 30px 60px rgba(0, 20, 30, 0.25); padding: 32px;
+            transform: scale(0.96) translateY(10px); transition: 0.3s;
+        }
+        .modal-overlay.active .modal-card { transform: scale(1) translateY(0); }
+        .modal-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+            padding-bottom: 16px; border-bottom: 1px solid #ecf1f5;
+        }
+        .modal-icon {
+            width: 56px; height: 56px; background: #e2ecf2; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; color: #1e5f7a; font-size: 1.5rem;
+        }
+        .modal-title { font-size: 1.5rem; font-weight: 620; color: #1a2e3b; }
+        .modal-subtitle { color: #2e6b7c; margin-top: 4px; }
+        .modal-close {
+            margin-left: auto; background: none; border: none; font-size: 1.5rem;
+            color: #7f9fb0; cursor: pointer; padding: 8px; border-radius: 50%;
+        }
+        .modal-close:hover { background: #ecf5f9; color: #1a4c64; }
+
+        /* Instructor info inside modal */
+        .instructor-info-card {
+            background: #f0f7fc; border-radius: 18px; padding: 20px; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid #d4e3ed;
+        }
+        .instructor-details h3 { font-size: 1.3rem; font-weight: 600; color: #1a4c64; margin-bottom: 4px; }
+        .instructor-details p { color: #2f6b7e; font-size: 0.95rem; }
+        .points-badge {
+            background: #1a4c64; color: white; padding: 12px 24px; border-radius: 60px;
+            font-size: 1.5rem; font-weight: 700; box-shadow: 0 6px 14px rgba(26,76,100,0.2);
+        }
+        .points-badge small { font-size: 0.9rem; font-weight: 400; opacity: 0.9; }
+
+        .session-list { display: flex; flex-direction: column; gap: 16px; }
+        .session-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #f9fcfe; border: 1px solid #e6ecf0; border-radius: 18px; padding: 16px 20px;
+        }
+        .session-info h4 { font-size: 1.1rem; font-weight: 600; color: #1a3b4a; }
+        .session-meta { display: flex; gap: 20px; margin-top: 8px; color: #3f6b7c; font-size: 0.9rem; }
+        .session-status-badge {
+            background: #ffe5b4; padding: 4px 12px; border-radius: 60px; font-size: 0.8rem; font-weight: 600;
+        }
+        .session-status-badge.unlocked { background: #b8e0d2; color: #1d5e4a; }
+        .session-actions { display: flex; gap: 12px; align-items: center; }
+        .lock-toggle-btn {
+            background: none; border: 1px solid #cbdae3; border-radius: 60px; padding: 6px 16px;
+            font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+        }
+        .lock-toggle-btn:hover { background: #e2ecf2; }
+        .feedback-view-btn {
+            background: #1a4c64; border: none; color: white; padding: 6px 16px;
+            border-radius: 60px; font-size: 0.85rem; cursor: pointer; transition: 0.15s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .feedback-view-btn:hover { background: #0e3a4f; }
+
+        /* ----- FEEDBACK DETAIL MODAL (nested) ----- */
+        .nested-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); z-index: 20000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: 0.25s;
+        }
+        .nested-modal-overlay.active { opacity: 1; visibility: visible; }
+        .nested-modal-card {
+            background: white; width: 700px; max-width: 90%; max-height: 80vh; overflow-y: auto;
+            border-radius: 28px; padding: 28px; box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+        .nested-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2f5;
+        }
+        .nested-header h3 { font-size: 1.4rem; color: #1a3b4a; }
+        .nested-close {
+            background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #7f9fb0;
+        }
+        .feedback-item {
+            background: #f8fbfe; border: 1px solid #e2ecf2; border-radius: 16px;
+            padding: 16px; margin-bottom: 16px;
+        }
+        .feedback-meta { display: flex; gap: 16px; font-size: 0.9rem; color: #2e6b7c; margin-bottom: 8px; }
+        .feedback-rating { color: #fbbf24; font-weight: 600; }
+        .feedback-text { color: #1d4455; line-height: 1.5; }
+
+        /* Toast & Logout Modal */
+        .toast {
+            position: fixed; top: 90px; right: 28px; background: white; padding: 16px 24px;
+            border-radius: 100px; box-shadow: 0 16px 32px rgba(0,20,30,0.12); display: flex;
+            align-items: center; gap: 12px; font-weight: 500; color: #1a485c;
+            border-left: 6px solid #2e8b6c; transform: translateX(120%); transition: 0.3s; z-index: 10001;
+        }
+        .toast.show { transform: translateX(0); }
+        .logout-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10,25,35,0.5); backdrop-filter: blur(5px); z-index: 20000;
+            opacity: 0; visibility: hidden; transition: 0.25s; display: flex; align-items: center; justify-content: center;
+        }
+        .logout-modal-overlay.active { opacity: 1; visibility: visible; }
+        .logout-modal-card {
+            background: white; width: 400px; border-radius: 28px; padding: 32px 28px;
+        }
+        .modal-header-compact { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .modal-icon-compact { width: 56px; height: 56px; background: #fff2f0; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: #b44a4a; font-size: 1.8rem; }
+        .modal-title-compact { font-size: 1.5rem; font-weight: 620; color: #1a2e3b; }
+        .modal-actions { display: flex; gap: 14px; justify-content: flex-end; }
+        .modal-btn { padding: 12px 28px; border-radius: 100px; font-weight: 560; border: none; cursor: pointer; border: 1px solid transparent; }
+        .modal-btn-secondary { background: #f0f4f7; color: #2c4a5c; border-color: #dae2e8; }
+        .modal-btn-secondary:hover { background: #e3eaef; }
+        .modal-btn-danger { background: #b94747; color: white; }
+        .modal-btn-danger:hover { background: #a33a3a; }
+    </style>
+</head>
+<body>
+    <!-- UPPER BAR -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span class="app-name">SholarX</span>
+            <span class="app-sub">Rating & Feedback System</span>
+        </div>
+        <div class="user-actions">
+            <div class="instructor-badge">
+                <i class="fas fa-user-graduate"></i>
+                <span>Instructor</span>
+            </div>
+            <a href="javascript:void(0);" onclick="openLogoutModal()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- PAGE TITLE BAR -->
+    <div class="page-title-bar">
+        <div class="page-title-content">
+            <div class="page-icon"><i class="fas fa-star"></i></div>
+            <span class="page-title">Rating Systems</span>
+            <span class="page-breadcrumb"><i class="fas fa-chevron-right"></i> Access & manage</span>
+        </div>
+    </div>
+
+    <!-- SIDEBAR + MAIN -->
+    <div class="app-frame">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="instructordash.html" class="nav-item" data-tooltip="Dashboard"><i class="fas fa-chart-line"></i></a>
+                <a href="instructorrates.html" class="nav-item active" data-tooltip="Ratings"><i class="fas fa-star"></i></a>
+                <a href="instructorcharts.html" class="nav-item" data-tooltip="Charts"><i class="fas fa-comments"></i></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Welcome (static, no name/points here) -->
+            <div class="welcome-section">
+                <div class="welcome-text"><h2>Instructor Access</h2><p>Enter passcode to manage a system</p></div>
+            </div>
+
+            <!-- Systems Grid -->
+            <div id="systemsGrid" class="systems-grid"></div>
+        </main>
+    </div>
+
+    <!-- MODAL: Course Sessions (Lock/Unlock) with Instructor Name & Points -->
+    <div id="sessionsModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon"><i class="fas fa-lock"></i></div>
+                <div>
+                    <span id="modalSystemTitle" class="modal-title">System Name</span>
+                    <div id="modalSystemMeta" class="modal-subtitle"></div>
+                </div>
+                <button class="modal-close" onclick="closeSessionsModal()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Instructor info card (dynamically filled) -->
+            <div id="instructorInfoCard" class="instructor-info-card">
+                <!-- Filled by JS -->
+            </div>
+
+            <div id="sessionsList" class="session-list"><!-- dynamic --></div>
+        </div>
+    </div>
+
+    <!-- NESTED MODAL: Session Feedback Details -->
+    <div id="feedbackDetailModal" class="nested-modal-overlay">
+        <div class="nested-modal-card">
+            <div class="nested-header">
+                <h3 id="feedbackModalTitle">Session Feedback</h3>
+                <button class="nested-close" onclick="closeFeedbackModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="feedbackListContainer" style="max-height: 60vh; overflow-y: auto;">
+                <!-- Feedback items will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i><span id="toastMessage">Success</span></div>
+
+    <!-- LOGOUT MODAL -->
+    <div id="logoutModal" class="logout-modal-overlay">
+        <div class="logout-modal-card">
+            <div class="modal-header-compact"><div class="modal-icon-compact"><i class="fas fa-sign-out-alt"></i></div><span class="modal-title-compact">Log out</span></div>
+            <div class="modal-message" style="margin:12px 0 28px 8px;">Are you sure you want to sign out?</div>
+            <div class="modal-actions"><button class="modal-btn modal-btn-secondary" onclick="closeLogoutModal()">Cancel</button><button class="modal-btn modal-btn-danger" onclick="confirmLogout()">Yes, log out</button></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ========== STORAGE KEYS ==========
+            const RATINGS_STORAGE_KEY = 'ratingsystems';
+            const INSTRUCTOR_RATES_KEY = 'instructorrates';
+            const FEEDBACK_STORAGE_KEY = 'feedbackArray';   // shared with student page
+            const LOCK_STATES_KEY = 'sessionLocks';
+
+            // ========== GLOBALS ==========
+            let currentSystem = null;
+            let currentSystemIndex = -1;
+            let currentInstructor = null;
+
+            // ========== INIT ==========
+            document.addEventListener('DOMContentLoaded', () => {
+                loadSystemsGrid();
+            });
+
+            // ---------- load all systems from ratingsystems ----------
+            function loadSystemsGrid() {
+                const systems = getRatingSystems();
+                const grid = document.getElementById('systemsGrid');
+                if (!systems.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; background:white; border-radius:24px;">No rating systems found.</div>';
+                    return;
+                }
+                grid.innerHTML = systems.map((sys, idx) => {
+                    const instructorList = sys.instructors ? sys.instructors.map(i => i.name).join(', ') : '—';
+                    const summary = sys.summary || 'Course evaluation system';
+                    return `
+                    <div class="system-card" data-index="${idx}">
+                        <div class="system-header">
+                            <h3 class="system-title">${escapeHtml(sys.systemName)}</h3>
+                            <span class="system-badge">${sys.sessions?.length || 0} sessions</span>
+                        </div>
+                        <div class="system-summary">
+                            <div class="summary-item"><span class="summary-icon"><i class="fas fa-align-left"></i></span> ${escapeHtml(summary)}</div>
+                            <div class="summary-item"><span class="summary-icon"><i class="fas fa-chalkboard-teacher"></i></span> Instructors: ${escapeHtml(instructorList)}</div>
+                        </div>
+                        <div class="access-section">
+                            <div class="passcode-input-group">
+                                <input type="text" id="passcode_${idx}" placeholder="Enter passcode" value="">
+                                <button onclick="attemptAccess(${idx})"><i class="fas fa-key"></i> Access</button>
+                            </div>
+                        </div>
+                    </div>
+                `}).join('');
+            }
+
+            // ---------- attempt access with passcode ----------
+            window.attemptAccess = (systemIndex) => {
+                const systems = getRatingSystems();
+                const system = systems[systemIndex];
+                if (!system) return;
+
+                const input = document.getElementById(`passcode_${systemIndex}`);
+                const entered = input ? input.value.trim() : '';
+
+                if (!entered) {
+                    showToast('Please enter a passcode', 'error');
+                    return;
+                }
+
+                const matchedInstructor = system.instructors.find(inst => inst.passCode === entered);
+                if (!matchedInstructor) {
+                    showToast('Invalid passcode', 'error');
+                    return;
+                }
+
+                currentInstructor = matchedInstructor;
+                currentSystem = system;
+                currentSystemIndex = systemIndex;
+
+                openSessionsModal(system, currentInstructor);
+            };
+
+            // ---------- open sessions modal (lock/unlock UI) with instructor info ----------
+            function openSessionsModal(system, instructor) {
+                document.getElementById('modalSystemTitle').textContent = system.systemName;
+                document.getElementById('modalSystemMeta').textContent = `System • ${system.sessions?.length || 0} sessions`;
+
+                const totalPoints = getInstructorTotalPoints(system.systemName, instructor.name);
+                const instructorCard = document.getElementById('instructorInfoCard');
+                instructorCard.innerHTML = `
+                    <div class="instructor-details">
+                        <h3>${escapeHtml(instructor.name)}</h3>
+                        <p><i class="fas fa-id-card"></i> Instructor · ${escapeHtml(system.systemName)}</p>
+                    </div>
+                    <div class="points-badge">
+                        ${totalPoints} <small>pts</small>
+                    </div>
+                `;
+
+                const sessionsListDiv = document.getElementById('sessionsList');
+                const sessions = system.sessions || [];
+                if (sessions.length === 0) {
+                    sessionsListDiv.innerHTML = '<p style="padding:20px; text-align:center;">No sessions available.</p>';
+                } else {
+                    const lockStates = getLockStates(system.systemName, instructor.name);
+                    sessionsListDiv.innerHTML = sessions.map((sessionName, idx) => {
+                        const isLocked = lockStates[idx] !== false;
+                        const statusClass = isLocked ? '' : 'unlocked';
+                        const statusText = isLocked ? '🔒 Locked' : '🔓 Unlocked';
+                        return `
+                        <div class="session-item">
+                            <div class="session-info">
+                                <h4>${escapeHtml(sessionName)}</h4>
+                                <div class="session-meta">
+                                    <span class="session-status-badge ${statusClass}">${statusText}</span>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="lock-toggle-btn" onclick="toggleSessionLock(${idx})">
+                                    ${isLocked ? 'Unlock' : 'Lock'}
+                                </button>
+                                <button class="feedback-view-btn" onclick="viewSessionFeedback(${idx}, '${escapeHtml(sessionName)}')">
+                                    <i class="fas fa-comment-dots"></i> Feedback
+                                </button>
+                            </div>
+                        </div>
+                    `}).join('');
+                }
+
+                document.getElementById('sessionsModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // ---------- view feedback for a specific session ----------
+            window.viewSessionFeedback = (sessionIndex, sessionName) => {
+                if (!currentSystem || !currentInstructor) return;
+
+                const feedbackArray = getFeedbackArray();
+                // Filter feedback for this system, instructor, and session
+                const sessionFeedback = feedbackArray.filter(f => 
+                    f.systemName === currentSystem.systemName &&
+                    f.instructorName === currentInstructor.name &&
+                    f.sessionIndex === sessionIndex
+                );
+
+                const modalTitle = document.getElementById('feedbackModalTitle');
+                modalTitle.textContent = `Feedback: ${sessionName}`;
+
+                const container = document.getElementById('feedbackListContainer');
+                if (sessionFeedback.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; padding:40px; color:#5f7d8c;">No feedback yet for this session.</p>';
+                } else {
+                    container.innerHTML = sessionFeedback.map(f => `
+                        <div class="feedback-item">
+                            <div class="feedback-meta">
+                                <span class="feedback-rating">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)} (${f.rating}/5)</span>
+                                <span><i class="far fa-clock"></i> ${new Date(f.timestamp).toLocaleDateString()}</span>
+                            </div>
+                            <div class="feedback-text">${escapeHtml(f.feedback)}</div>
+                        </div>
+                    `).join('');
+                }
+
+                document.getElementById('feedbackDetailModal').classList.add('active');
+            };
+
+            window.closeFeedbackModal = () => {
+                document.getElementById('feedbackDetailModal').classList.remove('active');
+            };
+
+            // ---------- get total points for an instructor from instructorrates ----------
+            function getInstructorTotalPoints(systemName, instructorName) {
+                const rates = getInstructorRates();
+                const instructorRate = rates.find(r => 
+                    r.systemName === systemName && r.instructorName === instructorName
+                );
+                return instructorRate ? (instructorRate.totalPoints || 0) : 0;
+            }
+
+            window.closeSessionsModal = () => {
+                document.getElementById('sessionsModal').classList.remove('active');
+                document.body.style.overflow = '';
+                currentSystem = null;
+                currentSystemIndex = -1;
+                currentInstructor = null;
+            };
+
+            // ---------- toggle lock for a session ----------
+            window.toggleSessionLock = (sessionIndex) => {
+                if (!currentSystem || !currentInstructor) return;
+                const lockStates = getLockStates(currentSystem.systemName, currentInstructor.name);
+                const current = lockStates[sessionIndex] !== false;
+                lockStates[sessionIndex] = !current;
+                saveLockStates(currentSystem.systemName, currentInstructor.name, lockStates);
+
+                openSessionsModal(currentSystem, currentInstructor);
+                showToast(`Session ${current ? 'unlocked' : 'locked'} successfully`);
+            };
+
+            // ---------- lock states helpers ----------
+            function getLockStates(systemName, instructorName) {
+                const all = JSON.parse(localStorage.getItem(LOCK_STATES_KEY) || '{}');
+                const key = `${systemName}_${instructorName}`;
+                return all[key] || {};
+            }
+
+            function saveLockStates(systemName, instructorName, states) {
+                const all = JSON.parse(localStorage.getItem(LOCK_STATES_KEY) || '{}');
+                all[`${systemName}_${instructorName}`] = states;
+                localStorage.setItem(LOCK_STATES_KEY, JSON.stringify(all));
+            }
+
+            // ---------- storage getters ----------
+            function getRatingSystems() {
+                return JSON.parse(localStorage.getItem(RATINGS_STORAGE_KEY) || '[]');
+            }
+
+            function getInstructorRates() {
+                return JSON.parse(localStorage.getItem(INSTRUCTOR_RATES_KEY) || '[]');
+            }
+
+            function getFeedbackArray() {
+                return JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || '[]');
+            }
+
+            // ---------- helper escape ----------
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                return unsafe.replace(/[&<>"']/g, function(m) {
+                    if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; if (m === '"') return '&quot;'; return '&#039;';
+                });
+            }
+
+            // ---------- toast ----------
+            function showToast(msg, type = 'success') {
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMessage').textContent = msg;
+                toast.style.borderLeftColor = type === 'success' ? '#2e8b6c' : '#b34a4a';
+                toast.querySelector('i').style.color = type === 'success' ? '#2e8b6c' : '#b34a4a';
+                toast.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+
+            // ---------- logout ----------
+            window.openLogoutModal = () => {
+                document.getElementById('logoutModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            };
+            window.closeLogoutModal = () => {
+                document.getElementById('logoutModal').classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            window.confirmLogout = () => window.location.href = 'login.html';
+
+            // Close modals on outside click / ESC
+            window.addEventListener('click', (e) => {
+                const sessModal = document.getElementById('sessionsModal');
+                if (e.target === sessModal) closeSessionsModal();
+                const logout = document.getElementById('logoutModal');
+                if (e.target === logout) closeLogoutModal();
+                const feedbackModal = document.getElementById('feedbackDetailModal');
+                if (e.target === feedbackModal) closeFeedbackModal();
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('sessionsModal').classList.contains('active')) closeSessionsModal();
+                    if (document.getElementById('logoutModal').classList.contains('active')) closeLogoutModal();
+                    if (document.getElementById('feedbackDetailModal').classList.contains('active')) closeFeedbackModal();
+                }
+            });
+
+            // Expose functions globally
+            window.attemptAccess = window.attemptAccess;
+            window.toggleSessionLock = window.toggleSessionLock;
+            window.viewSessionFeedback = window.viewSessionFeedback;
+        })();
+    </script>
+</body>
+</html>
